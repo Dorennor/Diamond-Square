@@ -17,7 +17,61 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="UI\Fonts\Roboto-Black.ttf" />
+    <None Remove="UI\Fonts\Roboto-BlackItalic.ttf" />
+    <None Remove="UI\Fonts\Roboto-Bold.ttf" />
+    <None Remove="UI\Fonts\Roboto-BoldItalic.ttf" />
+    <None Remove="UI\Fonts\Roboto-Italic.ttf" />
+    <None Remove="UI\Fonts\Roboto-Light.ttf" />
+    <None Remove="UI\Fonts\Roboto-LightItalic.ttf" />
+    <None Remove="UI\Fonts\Roboto-Medium.ttf" />
+    <None Remove="UI\Fonts\Roboto-MediumItalic.ttf" />
+    <None Remove="UI\Fonts\Roboto-Regular.ttf" />
+    <None Remove="UI\Fonts\Roboto-Thin.ttf" />
+    <None Remove="UI\Fonts\Roboto-ThinItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="UI\Fonts\Roboto-Black.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-BlackItalic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-Bold.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-BoldItalic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-Italic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-Light.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-LightItalic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-Medium.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-MediumItalic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-Regular.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-Thin.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\Fonts\Roboto-ThinItalic.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
