@@ -6,124 +6,114 @@ namespace Diamond_Square.Models
     public static class HeightMapping
     {
         public static int YSize { get; } = 1025;
-        public static int XSize { get; } = YSize * 2 - 1;
+        public static int XSize { get; } = 1025;
         private static float[,] heightmap = new float[XSize, YSize];
         private static float roughness = 5f;
-        private static bool lrflag = false;
 
-        public static void Square(int lx, int ly, int rx, int ry, Random random)
+        public static void Square(int leftX, int leftY, int rightX, int rightY, Random random)
         {
-            int l = (rx - lx) / 2;
+            int middle = (rightX - leftX) / 2;
 
-            float a = heightmap[lx, ly];
-            float b = heightmap[lx, ry];
-            float c = heightmap[rx, ry];
-            float d = heightmap[rx, ly];
-            int cex = lx + l;
-            int cey = ly + l;
+            float a = heightmap[leftX, leftY];
+            float b = heightmap[leftX, rightY];
+            float c = heightmap[rightX, rightY];
+            float d = heightmap[rightX, leftY];
 
-            heightmap[cex, cey] = (a + b + c + d) / 4 + random.RandRange(-l * 2 * roughness / YSize, l * 2 * roughness / YSize);
+            int centerX = leftX + middle;
+            int centerY = leftY + middle;
+
+            heightmap[centerX, centerY] = (a + b + c + d) / 4 + random.RandRange(-middle * 2 * roughness / YSize, middle * 2 * roughness / YSize);
         }
 
-        public static void Diamond(int tgx, int tgy, int l, Random random)
+        public static void Diamond(int sideCenterX, int sideCenterY, int middle, Random random)
         {
             float a, b, c, d;
 
-            if (tgy - l >= 0)
+            if (sideCenterY - middle >= 0)
             {
-                a = heightmap[tgx, tgy - l];
+                a = heightmap[sideCenterX, sideCenterY - middle];
             }
             else
             {
-                a = heightmap[tgx, YSize - l];
+                a = heightmap[sideCenterX, YSize - middle];
             }
 
-            if (tgx - l >= 0)
+            if (sideCenterX - middle >= 0)
             {
-                b = heightmap[tgx - l, tgy];
+                b = heightmap[sideCenterX - middle, sideCenterY];
             }
             else
             {
-                if (lrflag)
-                {
-                    b = heightmap[XSize - l, tgy];
-                }
-                else
-                {
-                    b = heightmap[YSize - l, tgy];
-                }
+                b = heightmap[XSize - middle, sideCenterY];
             }
 
-            if (tgy + l < YSize)
+            if (sideCenterY + middle < YSize)
             {
-                c = heightmap[tgx, tgy + l];
+                c = heightmap[sideCenterX, sideCenterY + middle];
             }
             else
             {
-                c = heightmap[tgx, l];
+                c = heightmap[sideCenterX, middle];
             }
 
-            if (lrflag)
+            if (sideCenterX + middle < XSize)
             {
-                if (tgx + l < XSize)
-                {
-                    d = heightmap[tgx + l, tgy];
-                }
-                else
-                {
-                    d = heightmap[l, tgy];
-                }
+                d = heightmap[sideCenterX + middle, sideCenterY];
             }
             else
             {
-                if (tgx + l < YSize)
-                {
-                    d = heightmap[tgx + l, tgy];
-                }
-                else
-                {
-                    d = heightmap[l, tgy];
-                }
+                d = heightmap[middle, sideCenterY];
             }
-            heightmap[tgx, tgy] = (a + b + c + d) / 4 + random.RandRange(-l * 2 * roughness / YSize, l * 2 * roughness / YSize);
+
+            if (sideCenterX + middle < YSize)
+            {
+                d = heightmap[sideCenterX + middle, sideCenterY];
+            }
+            else
+            {
+                d = heightmap[middle, sideCenterY];
+            }
+
+            heightmap[sideCenterX, sideCenterY] = (a + b + c + d) / 4 + random.RandRange(-middle * 2 * roughness / YSize, middle * 2 * roughness / YSize);
         }
 
-        public static void DiamondSquare(int lx, int ly, int rx, int ry, Random random)
+        public static void DiamondSquare(int leftX, int leftY, int rightX, int rightY, Random random)
         {
-            int l = (rx - lx) / 2;
+            int middle = (rightX - leftX) / 2;
 
-            Square(lx, ly, rx, ry, random);
+            Square(leftX, leftY, rightX, rightY, random);
 
-            Diamond(lx, ly + l, l, random);
-            Diamond(rx, ry - l, l, random);
-            Diamond(rx - l, ry, l, random);
-            Diamond(lx + l, ly, l, random);
+            Diamond(leftX, leftY + middle, middle, random);
+            Diamond(rightX, rightY - middle, middle, random);
+            Diamond(rightX - middle, rightY, middle, random);
+            Diamond(leftX + middle, leftY, middle, random);
         }
 
-        public static void MidPointDisplacement(int lx, int ly, int rx, int ry, Random random)
+        public static void MiddlePointDisplacement(int middleX, int middleY, int rightX, int rightY, Random random)
         {
-            int l = (rx - lx) / 2;
-            if (l > 0)
+            int middle = (rightX - middleX) / 2;
+
+            if (middle > 0)
             {
-                float a = heightmap[lx, ly];
-                float b = heightmap[lx, ry];
-                float c = heightmap[rx, ry];
-                float d = heightmap[rx, ly];
+                float a = heightmap[middleX, middleY];
+                float b = heightmap[middleX, rightY];
+                float c = heightmap[rightX, rightY];
+                float d = heightmap[rightX, middleY];
 
-                int cex = lx + l;
-                int cey = ly + l;
+                int centerX = middleX + middle;
+                int centerY = middleY + middle;
 
-                heightmap[cex, cey] = (a + b + c + d) / 4 + random.RandRange(-l * 2 * roughness / XSize, l * 2 * roughness / XSize);
+                heightmap[centerX, centerY] = (a + b + c + d) / 4 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
 
-                heightmap[lx, cey] = (a + b) / 2 + random.RandRange(-l * 2 * roughness / XSize, l * 2 * roughness / XSize);
-                heightmap[rx, cey] = (c + d) / 2 + random.RandRange(-l * 2 * roughness / XSize, l * 2 * roughness / XSize);
-                heightmap[cex, ly] = (a + d) / 2 + random.RandRange(-l * 2 * roughness / XSize, l * 2 * roughness / XSize);
-                heightmap[cex, ry] = (b + c) / 2 + random.RandRange(-l * 2 * roughness / XSize, l * 2 * roughness / XSize);
+                heightmap[middleX, centerY] = (a + b) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[rightX, centerY] = (c + d) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[centerX, middleY] = (a + d) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[centerX, rightY] = (b + c) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
 
-                MidPointDisplacement(lx, ly, cex, cey, random);
-                MidPointDisplacement(lx, ly + l, lx + l, ry, random);
-                MidPointDisplacement(cex, cey, rx, ry, random);
-                MidPointDisplacement(lx + l, ly, rx, cey, random);
+                MiddlePointDisplacement(middleX, middleY, centerX, centerY, random);
+                MiddlePointDisplacement(middleX, middleY + middle, middleX + middle, rightY, random);
+                MiddlePointDisplacement(centerX, centerY, rightX, rightY, random);
+                MiddlePointDisplacement(middleX + middle, middleY, rightX, centerY, random);
             }
         }
 
@@ -137,22 +127,13 @@ namespace Diamond_Square.Models
             heightmap[YSize - 1, YSize - 1] = random.RandRange(0.3f, 0.6f);
             heightmap[YSize - 1, 0] = random.RandRange(0.3f, 0.6f);
 
-            for (int l = (YSize - 1) / 2; l > 0; l /= 2)
+            for (int middle = (YSize - 1) / 2; middle > 0; middle /= 2)
             {
-                for (int x = 0; x < XSize - 1; x += l)
+                for (int x = 0; x < XSize - 1; x += middle)
                 {
-                    if (x >= YSize - l)
+                    for (int y = 0; y < YSize - 1; y += middle)
                     {
-                        lrflag = true;
-                    }
-                    else
-                    {
-                        lrflag = false;
-                    }
-
-                    for (int y = 0; y < YSize - 1; y += l)
-                    {
-                        DiamondSquare(x, y, x + l, y + l, random);
+                        DiamondSquare(x, y, x + middle, y + middle, random);
                     }
                 }
             }

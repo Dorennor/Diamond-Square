@@ -28,7 +28,7 @@ namespace Diamond_Square
             _CancellationTokenSource = new CancellationTokenSource();
             _CancellationToken = _CancellationTokenSource.Token;
 
-            _bitmap = new Bitmap(1024, 1024);
+            _bitmap = new Bitmap(HeightMapping.XSize, HeightMapping.YSize);
 
             _graphics = Graphics.FromImage(_bitmap);
             _graphics.Clear(Color.Black);
@@ -90,7 +90,7 @@ namespace Diamond_Square
             StopButton.IsEnabled = false;
             CleanButton.IsEnabled = false;
 
-            _bitmap = new Bitmap(1024, 1024);
+            _bitmap = new Bitmap(HeightMapping.XSize, HeightMapping.YSize);
 
             _graphics = Graphics.FromImage(_bitmap);
             _graphics.Clear(Color.Black);

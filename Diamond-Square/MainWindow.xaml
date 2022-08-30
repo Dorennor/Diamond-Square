@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Diamond-Square"
-        Height="600"
-        Width="800">
+        Height="600" Width="800">
 
     <Border BorderBrush="Black" BorderThickness="1">
         <Grid Margin="10">

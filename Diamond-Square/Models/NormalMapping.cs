@@ -8,61 +8,63 @@ namespace Diamond_Square.Models
         {
             int width = image.Width - 1;
             int height = image.Height - 1;
-            float sample_l;
-            float sample_r;
-            float sample_u;
-            float sample_d;
+            float leftSample;
+            float rightSample;
+            float topSample;
+            float bottomSample;
             float xVector;
             float yVector;
 
+            //Random random = new Random();
+
             Bitmap normalMap = new Bitmap(image.Width, image.Height);
 
-            for (int y = 0; y < width + 1; y++)
+            for (int y = 0; y <= width; y++)
             {
-                for (int x = 0; x < height + 1; x++)
+                for (int x = 0; x <= height; x++)
                 {
                     if (x > 0)
                     {
-                        sample_l = image.GetPixel(x - 1, y).GetBrightness();
+                        leftSample = image.GetPixel(x - 1, y).GetBrightness();
                     }
                     else
                     {
-                        sample_l = image.GetPixel(x, y).GetBrightness();
+                        leftSample = image.GetPixel(x, y).GetBrightness();
                     }
 
                     if (x < width)
                     {
-                        sample_r = image.GetPixel(x + 1, y).GetBrightness();
+                        rightSample = image.GetPixel(x + 1, y).GetBrightness();
                     }
                     else
                     {
-                        sample_r = image.GetPixel(x, y).GetBrightness();
+                        rightSample = image.GetPixel(x, y).GetBrightness();
                     }
 
                     if (y > 1)
                     {
-                        sample_u = image.GetPixel(x, y - 1).GetBrightness();
+                        topSample = image.GetPixel(x, y - 1).GetBrightness();
                     }
                     else
                     {
-                        sample_u = image.GetPixel(x, y).GetBrightness();
+                        topSample = image.GetPixel(x, y).GetBrightness();
                     }
 
                     if (y < height)
                     {
-                        sample_d = image.GetPixel(x, y + 1).GetBrightness();
+                        bottomSample = image.GetPixel(x, y + 1).GetBrightness();
                     }
                     else
                     {
-                        sample_d = image.GetPixel(x, y).GetBrightness();
+                        bottomSample = image.GetPixel(x, y).GetBrightness();
                     }
 
-                    xVector = (sample_l - sample_r + 1) * 0.5f * 255;
-                    yVector = (sample_u - sample_d + 1) * 0.5f * 255;
+                    xVector = (leftSample - rightSample + 1) * 0.5f * 255;
+                    yVector = (topSample - bottomSample + 1) * 0.5f * 255;
 
-                    Color col = Color.FromArgb(255, (int)xVector, (int)yVector, 255);
+                    Color color = Color.FromArgb(255, (int)xVector, (int)yVector, 255/*random.Next(1, 256)*/);
 
-                    normalMap.SetPixel(x, y, col);
+                    normalMap.SetPixel(x, y, color);
                 }
             }
 

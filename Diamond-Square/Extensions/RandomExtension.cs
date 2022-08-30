@@ -4,9 +4,9 @@ namespace Diamond_Square.Extensions
 {
     internal static class RandomDoubleFromRangeExtension
     {
-        internal static float RandRange(this Random r, float rMin, float rMax)
+        internal static float RandRange(this Random random, float min, float max)
         {
-            return rMin + (float)r.NextDouble() * (rMax - rMin);
+            return min + (float)random.NextDouble() * (max - min);
         }
     }
 }
