@@ -1,16 +1,5 @@
 ﻿<Application x:Class="Diamond_Square.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ViewModels="clr-namespace:Diamond_Square.UI.ViewModels"
-             xmlns:Views="clr-namespace:Diamond_Square.UI.Views"
              StartupUri="MainWindow.xaml">
-    <Application.Resources>
-        <DataTemplate DataType="{x:Type ViewModels:PlotViewModel}">
-            <Views:PlotView />
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type ViewModels:NormalMapViewModel}">
-            <Views:NormalMapView />
-        </DataTemplate>
-    </Application.Resources>
 </Application>

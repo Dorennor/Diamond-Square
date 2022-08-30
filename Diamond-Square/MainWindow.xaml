@@ -3,39 +3,71 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:ViewModels="clr-namespace:Diamond_Square.UI.ViewModels"
         mc:Ignorable="d"
         Title="Diamond-Square"
         Height="600"
-        Width="900">
-
-    <Window.DataContext>
-        <ViewModels:MainViewModel></ViewModels:MainViewModel>
-    </Window.DataContext>
+        Width="800">
 
     <Border BorderBrush="Black" BorderThickness="1">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1">
-                <StackPanel Orientation="Vertical">
-                    <Label Content="Diamond-Square"></Label>
-                    <Border BorderBrush="Black" BorderThickness="0, 1,0,1">
+        <Grid Margin="10">
+            <DockPanel LastChildFill="True">
+                <Grid MinWidth="200">
+                    <Border BorderBrush="Black" BorderThickness="1">
                         <StackPanel Orientation="Vertical">
-                            <Button Content="Fractal plot" Margin="5" Command="{Binding PlotViewModelCommand}"></Button>
-                            <Button Content="Normal map" Margin="5" Command="{Binding NormalMapViewModelCommand}"></Button>
+                            <Button Name="DrawHeightMapButton"
+                                    Click="DrawHeightMapButton_Click"
+                                    Content="Draw height map"
+                                    FontFamily="Times New Roman"
+                                    FontSize="14"
+                                    MaxHeight="30"
+                                    Margin="5"
+                                    Padding="5"></Button>
+                            <Button Name="DrawNormalMapButton"
+                                    Click="DrawNormalMapButton_Click"
+                                    Content="Draw normal map"
+                                    FontFamily="Times New Roman"
+                                    FontSize="14"
+                                    MaxHeight="30"
+                                    Margin="5"
+                                    Padding="5"></Button>
+                            <Button Name="StopButton"
+                                    Click="StopButton_Click"
+                                    Content="Stop"
+                                    FontFamily="Times New Roman"
+                                    FontSize="14"
+                                    MaxHeight="30"
+                                    Margin="5"
+                                    Padding="5"></Button>
+                            <Button Name="CleanButton"
+                                    Click="CleanButton_Click"
+                                    Content="Clean"
+                                    FontFamily="Times New Roman"
+                                    FontSize="14"
+                                    MaxHeight="30"
+                                    Margin="5"
+                                    Padding="5"></Button>
+                            <Label Content="Seed"
+                                   FontFamily="Times New Roman"
+                                   FontSize="14"
+                                   MaxHeight="30"
+                                   Margin="5"
+                                   Padding="5"></Label>
+                            <TextBox Name="SeedTextBox"
+                                     PreviewTextInput="NumberValidationTextBox"
+                                     FontFamily="Times New Roman"
+                                     FontSize="14"
+                                     MaxHeight="30"
+                                     Margin="5"
+                                     Padding="5"></TextBox>
                         </StackPanel>
                     </Border>
-                </StackPanel>
-            </Border>
-            <Border Grid.Column="1" BorderBrush="Black" BorderThickness="1">
-                <ContentControl Margin="10"
-                                Content="{Binding CurrentView}">
-                </ContentControl>
-            </Border>
+                </Grid>
+                <Grid>
+                    <Border BorderBrush="Black" BorderThickness="1">
+                        <Image Name="FractalImage"></Image>
+                    </Border>
+                </Grid>
+            </DockPanel>
         </Grid>
     </Border>
 </Window>
