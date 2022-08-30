@@ -146,6 +146,11 @@ namespace Diamond_Square
                 }
             });
 
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
             DrawHeightMapButton.IsEnabled = false;
             DrawNormalMapButton.IsEnabled = true;
             StopButton.IsEnabled = false;
