@@ -18,7 +18,7 @@ namespace Diamond_Square
         private CancellationToken _CancellationToken;
         private Graphics _graphics;
         private Bitmap _bitmap;
-
+        private int _colorSmoothing = 255;
         private float[,] heightmap;
 
         public MainWindow()
@@ -54,6 +54,11 @@ namespace Diamond_Square
             else
             {
                 random = new Random(Convert.ToInt32(SeedTextBox.Text));
+            }
+
+            if (ColorSmoothingTextBox.Text != String.Empty)
+            {
+                _colorSmoothing = Convert.ToInt32(ColorSmoothingTextBox.Text);
             }
 
             await DrawHeightMapAsync(_CancellationToken);
@@ -128,7 +133,7 @@ namespace Diamond_Square
                             opacity = 255;
                         }
 
-                        var pen = new Pen(Color.FromArgb(opacity, 255, 255, 255), 1);
+                        var pen = new Pen(Color.FromArgb(opacity, _colorSmoothing, _colorSmoothing, _colorSmoothing), 1);
 
                         lock (_graphics)
                         {
