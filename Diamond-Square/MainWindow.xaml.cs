@@ -168,7 +168,7 @@ namespace Diamond_Square
             {
                 lock (_bitmap)
                 {
-                    _bitmap = NormalMapping.Calculate(_bitmap);
+                    _bitmap = NormalMapping.BuildNormalMap(_bitmap);
                 }
             }));
 

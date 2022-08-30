@@ -4,7 +4,7 @@ namespace Diamond_Square.Models
 {
     public static class NormalMapping
     {
-        public static Bitmap Calculate(Bitmap image)
+        public static Bitmap BuildNormalMap(Bitmap image)
         {
             int width = image.Width - 1;
             int height = image.Height - 1;
