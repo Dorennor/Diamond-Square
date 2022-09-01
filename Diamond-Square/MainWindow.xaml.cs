@@ -6,24 +6,45 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Diamond_Square.Extensions;
+using Diamond_Square.Interfaces;
 using Diamond_Square.Models;
+using Color = System.Drawing.Color;
+using Pen = System.Drawing.Pen;
 
 namespace Diamond_Square
 {
     public partial class MainWindow : Window
     {
-        private static Random random;
+#pragma warning disable CS8618
+        private static IRandomGenerator _randomGenerator;
+#pragma warning restore CS8618
+
+        private INormalMapping _normalMapping;
+        private IHeightMapping _heightMapping;
 
         private CancellationTokenSource _CancellationTokenSource;
         private CancellationToken _CancellationToken;
         private Graphics _graphics;
         private Bitmap _bitmap;
-        private int _colorSmoothing = 255;
+        private static Pen[] pens;
         private float[,] heightmap;
+
+        static MainWindow()
+        {
+            pens = new Pen[256];
+
+            for (int i = 0; i < pens.Length; i++)
+            {
+                pens[i] = new Pen(Color.FromArgb(255, i, i, i), 1);
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+
+            _normalMapping = new NormalMapping();
+            _heightMapping = new HeightMapping();
 
             _CancellationTokenSource = new CancellationTokenSource();
             _CancellationToken = _CancellationTokenSource.Token;
@@ -49,16 +70,11 @@ namespace Diamond_Square
 
             if (SeedTextBox.Text == String.Empty)
             {
-                random = new Random();
+                _randomGenerator = new RandomGenerator();
             }
             else
             {
-                random = new Random(Convert.ToInt32(SeedTextBox.Text));
-            }
-
-            if (ColorSmoothingTextBox.Text != String.Empty)
-            {
-                _colorSmoothing = Convert.ToInt32(ColorSmoothingTextBox.Text);
+                _randomGenerator = new RandomGenerator(Convert.ToInt32(SeedTextBox.Text));
             }
 
             await DrawHeightMapAsync(_CancellationToken);
@@ -98,8 +114,10 @@ namespace Diamond_Square
             _bitmap = new Bitmap(HeightMapping.XSize, HeightMapping.YSize);
 
             _graphics = Graphics.FromImage(_bitmap);
-            _graphics.Clear(Color.Black);
+            _graphics.Clear(Color.White);
             _graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+            FractalImage.Source = _bitmap.GetImageSource();
         }
 
         private async Task DrawHeightMapAsync(CancellationToken cancellationToken)
@@ -109,7 +127,7 @@ namespace Diamond_Square
                 return;
             }
 
-            heightmap = HeightMapping.Generate(random);
+            heightmap = _heightMapping.GenerateHeightMap(_randomGenerator);
 
             await Task.Run(() =>
             {
@@ -133,28 +151,15 @@ namespace Diamond_Square
                             opacity = 255;
                         }
 
-                        var pen = new Pen(Color.FromArgb(opacity, _colorSmoothing, _colorSmoothing, _colorSmoothing), 1);
-
-                        lock (_graphics)
-                        {
-                            _graphics.DrawRectangle(pen, i, j, 1, 1);
-                        }
-
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            lock (_bitmap)
-                            {
-                                FractalImage.Source = _bitmap.GetImageSource();
-                            }
-                        }), System.Windows.Threading.DispatcherPriority.Background);
+                        _graphics.DrawRectangle(pens[opacity], i, j, 1, 1);
                     }
                 }
-            });
 
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    FractalImage.Source = _bitmap.GetImageSource();
+                }), System.Windows.Threading.DispatcherPriority.Background);
+            });
 
             DrawHeightMapButton.IsEnabled = false;
             DrawNormalMapButton.IsEnabled = true;
@@ -171,10 +176,11 @@ namespace Diamond_Square
 
             await Task.Run(new Action(() =>
             {
-                lock (_bitmap)
+                Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    _bitmap = NormalMapping.BuildNormalMap(_bitmap);
-                }
+                    _bitmap = _normalMapping.GenerateNormalMap(_bitmap);
+                    FractalImage.Source = _bitmap.GetImageSource();
+                }), System.Windows.Threading.DispatcherPriority.Background);
             }));
 
             DrawHeightMapButton.IsEnabled = false;

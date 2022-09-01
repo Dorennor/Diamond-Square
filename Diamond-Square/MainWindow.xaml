@@ -58,20 +58,6 @@
                                      MaxHeight="30"
                                      Margin="5"
                                      Padding="5"></TextBox>
-                            <Label Content="Color smoothing"
-                                   FontFamily="{StaticResource Roboto-Regular}"
-                                   FontSize="14"
-                                   MaxHeight="30"
-                                   Margin="5"
-                                   Padding="5"></Label>
-                            <TextBox Name="ColorSmoothingTextBox"
-                                     Text="255"
-                                     PreviewTextInput="NumberValidationTextBox"
-                                     FontFamily="{StaticResource Roboto-Regular}"
-                                     FontSize="14"
-                                     MaxHeight="30"
-                                     Margin="5"
-                                     Padding="5"></TextBox>
                         </StackPanel>
                     </Border>
                 </Grid>

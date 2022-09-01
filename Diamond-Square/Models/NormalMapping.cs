@@ -1,10 +1,11 @@
 ﻿using System.Drawing;
+using Diamond_Square.Interfaces;
 
 namespace Diamond_Square.Models
 {
-    public static class NormalMapping
+    public class NormalMapping : INormalMapping
     {
-        public static Bitmap BuildNormalMap(Bitmap image)
+        public Bitmap GenerateNormalMap(Bitmap image)
         {
             int width = image.Width - 1;
             int height = image.Height - 1;
@@ -14,8 +15,6 @@ namespace Diamond_Square.Models
             float bottomSample;
             float xVector;
             float yVector;
-
-            //Random random = new Random();
 
             Bitmap normalMap = new Bitmap(image.Width, image.Height);
 
@@ -59,10 +58,12 @@ namespace Diamond_Square.Models
                         bottomSample = image.GetPixel(x, y).GetBrightness();
                     }
 
-                    xVector = (leftSample - rightSample + 1) * 0.5f * 255;
-                    yVector = (topSample - bottomSample + 1) * 0.5f * 255;
+                    float coefficient = 0.5f;
 
-                    Color color = Color.FromArgb(255, (int)xVector, (int)yVector, 255/*random.Next(1, 256)*/);
+                    xVector = (leftSample - rightSample + 1) * coefficient * 255;
+                    yVector = (topSample - bottomSample + 1) * coefficient * 255;
+
+                    Color color = Color.FromArgb(255, (int)xVector, (int)yVector, 255);
 
                     normalMap.SetPixel(x, y, color);
                 }

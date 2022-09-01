@@ -1,16 +1,21 @@
-﻿using System;
-using Diamond_Square.Extensions;
+﻿using Diamond_Square.Interfaces;
 
 namespace Diamond_Square.Models
 {
-    public static class HeightMapping
+    public class HeightMapping : IHeightMapping
     {
-        public static int YSize { get; } = 1025;
-        public static int XSize { get; } = 1025;
-        private static float[,] heightmap = new float[XSize, YSize];
-        private static float roughness = 5f;
+        public static readonly int YSize = 1025;
+        public static readonly int XSize = 1025;
 
-        public static void Square(int leftX, int leftY, int rightX, int rightY, Random random)
+        private static readonly float roughness = 5f;
+        private float[,] heightmap;
+
+        public HeightMapping()
+        {
+            heightmap = new float[XSize, YSize];
+        }
+
+        private void Diamond(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
         {
             int middle = (rightX - leftX) / 2;
 
@@ -22,10 +27,12 @@ namespace Diamond_Square.Models
             int centerX = leftX + middle;
             int centerY = leftY + middle;
 
-            heightmap[centerX, centerY] = (a + b + c + d) / 4 + random.RandRange(-middle * 2 * roughness / YSize, middle * 2 * roughness / YSize);
+            float value = randomGenerator.NextFloat(-middle * 2 * roughness / YSize, middle * 2 * roughness / YSize);
+
+            heightmap[centerX, centerY] = (a + b + c + d) / 4 + value;
         }
 
-        public static void Diamond(int sideCenterX, int sideCenterY, int middle, Random random)
+        private void Square(int sideCenterX, int sideCenterY, int middle, IRandomGenerator randomGenerator)
         {
             float a, b, c, d;
 
@@ -74,22 +81,24 @@ namespace Diamond_Square.Models
                 d = heightmap[middle, sideCenterY];
             }
 
-            heightmap[sideCenterX, sideCenterY] = (a + b + c + d) / 4 + random.RandRange(-middle * 2 * roughness / YSize, middle * 2 * roughness / YSize);
+            float value = randomGenerator.NextFloat(-middle * 2 * roughness / YSize, middle * 2 * roughness / YSize);
+
+            heightmap[sideCenterX, sideCenterY] = (a + b + c + d) / 4 + value;
         }
 
-        public static void DiamondSquare(int leftX, int leftY, int rightX, int rightY, Random random)
+        private void DiamondSquare(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
         {
             int middle = (rightX - leftX) / 2;
 
-            Square(leftX, leftY, rightX, rightY, random);
+            Diamond(leftX, leftY, rightX, rightY, randomGenerator);
 
-            Diamond(leftX, leftY + middle, middle, random);
-            Diamond(rightX, rightY - middle, middle, random);
-            Diamond(rightX - middle, rightY, middle, random);
-            Diamond(leftX + middle, leftY, middle, random);
+            Square(leftX, leftY + middle, middle, randomGenerator);
+            Square(rightX, rightY - middle, middle, randomGenerator);
+            Square(rightX - middle, rightY, middle, randomGenerator);
+            Square(leftX + middle, leftY, middle, randomGenerator);
         }
 
-        public static void MiddlePointDisplacement(int middleX, int middleY, int rightX, int rightY, Random random)
+        private void MiddlePointDisplacement(int middleX, int middleY, int rightX, int rightY, IRandomGenerator randomGenerator)
         {
             int middle = (rightX - middleX) / 2;
 
@@ -103,37 +112,34 @@ namespace Diamond_Square.Models
                 int centerX = middleX + middle;
                 int centerY = middleY + middle;
 
-                heightmap[centerX, centerY] = (a + b + c + d) / 4 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[centerX, centerY] = (a + b + c + d) / 4 + randomGenerator.NextFloat(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
 
-                heightmap[middleX, centerY] = (a + b) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
-                heightmap[rightX, centerY] = (c + d) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
-                heightmap[centerX, middleY] = (a + d) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
-                heightmap[centerX, rightY] = (b + c) / 2 + random.RandRange(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[middleX, centerY] = (a + b) / 2 + randomGenerator.NextFloat(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[rightX, centerY] = (c + d) / 2 + randomGenerator.NextFloat(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[centerX, middleY] = (a + d) / 2 + randomGenerator.NextFloat(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
+                heightmap[centerX, rightY] = (b + c) / 2 + randomGenerator.NextFloat(-middle * 2 * roughness / XSize, middle * 2 * roughness / XSize);
 
-                MiddlePointDisplacement(middleX, middleY, centerX, centerY, random);
-                MiddlePointDisplacement(middleX, middleY + middle, middleX + middle, rightY, random);
-                MiddlePointDisplacement(centerX, centerY, rightX, rightY, random);
-                MiddlePointDisplacement(middleX + middle, middleY, rightX, centerY, random);
+                MiddlePointDisplacement(middleX, middleY, centerX, centerY, randomGenerator);
+                MiddlePointDisplacement(middleX, middleY + middle, middleX + middle, rightY, randomGenerator);
+                MiddlePointDisplacement(centerX, centerY, rightX, rightY, randomGenerator);
+                MiddlePointDisplacement(middleX + middle, middleY, rightX, centerY, randomGenerator);
             }
         }
 
-        public static float[,] Generate(Random random)
+        public float[,] GenerateHeightMap(IRandomGenerator randomGenerator)
         {
-            heightmap[0, 0] = random.RandRange(0.3f, 0.6f);
-            heightmap[0, YSize - 1] = random.RandRange(0.3f, 0.6f);
-            heightmap[XSize - 1, YSize - 1] = random.RandRange(0.3f, 0.6f);
-            heightmap[XSize - 1, 0] = random.RandRange(0.3f, 0.6f);
+            heightmap[0, 0] = randomGenerator.NextFloat(0.3f, 0.6f);
+            heightmap[0, YSize - 1] = randomGenerator.NextFloat(0.3f, 0.6f);
+            heightmap[XSize - 1, YSize - 1] = randomGenerator.NextFloat(0.3f, 0.6f);
+            heightmap[XSize - 1, 0] = randomGenerator.NextFloat(0.3f, 0.6f);
 
-            heightmap[YSize - 1, YSize - 1] = random.RandRange(0.3f, 0.6f);
-            heightmap[YSize - 1, 0] = random.RandRange(0.3f, 0.6f);
-
-            for (int middle = (YSize - 1) / 2; middle > 0; middle /= 2)
+            for (int middle = (YSize - 1); middle > 0; middle /= 2)
             {
                 for (int x = 0; x < XSize - 1; x += middle)
                 {
                     for (int y = 0; y < YSize - 1; y += middle)
                     {
-                        DiamondSquare(x, y, x + middle, y + middle, random);
+                        DiamondSquare(x, y, x + middle, y + middle, randomGenerator);
                     }
                 }
             }
