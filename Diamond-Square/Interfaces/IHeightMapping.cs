@@ -2,6 +2,6 @@
 {
     public interface IHeightMapping
     {
-        float[,] GenerateHeightMap(IRandomGenerator randomGenerator);
+        int[,] GenerateHeightMap(IRandomGenerator randomGenerator);
     }
 }

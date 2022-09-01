@@ -27,7 +27,7 @@ namespace Diamond_Square
         private Graphics _graphics;
         private Bitmap _bitmap;
         private static Pen[] pens;
-        private float[,] heightmap;
+        private int[,] heightMap;
 
         static MainWindow()
         {
@@ -127,7 +127,7 @@ namespace Diamond_Square
                 return;
             }
 
-            heightmap = _heightMapping.GenerateHeightMap(_randomGenerator);
+            heightMap = _heightMapping.GenerateHeightMap(_randomGenerator);
 
             await Task.Run(() =>
             {
@@ -140,18 +140,7 @@ namespace Diamond_Square
                             return;
                         }
 
-                        int opacity = (int)Math.Round(heightmap[i, j] * 255);
-
-                        if (opacity < 0)
-                        {
-                            opacity = 0;
-                        }
-                        else if (opacity > 255)
-                        {
-                            opacity = 255;
-                        }
-
-                        _graphics.DrawRectangle(pens[opacity], i, j, 1, 1);
+                        _graphics.DrawRectangle(pens[heightMap[i, j]], i, j, 1, 1);
                     }
                 }
 

@@ -4,9 +4,9 @@ using System.Windows.Media.Imaging;
 
 namespace Diamond_Square.Extensions
 {
-    internal static class BitmapImageExtension
+    public static class BitmapImageExtension
     {
-        internal static BitmapImage GetImageSource(this Bitmap bitmap)
+        public static BitmapImage GetImageSource(this Bitmap bitmap)
         {
             using (MemoryStream memory = new MemoryStream())
             {

@@ -9,12 +9,15 @@ namespace Diamond_Square.Models
         {
             int width = image.Width - 1;
             int height = image.Height - 1;
+
             float leftSample;
             float rightSample;
             float topSample;
             float bottomSample;
+
             float xVector;
             float yVector;
+            //float zVector;
 
             Bitmap normalMap = new Bitmap(image.Width, image.Height);
 
@@ -62,8 +65,9 @@ namespace Diamond_Square.Models
 
                     xVector = (leftSample - rightSample + 1) * coefficient * 255;
                     yVector = (topSample - bottomSample + 1) * coefficient * 255;
+                    //zVector = (xVector + yVector) / 2;
 
-                    Color color = Color.FromArgb(255, (int)xVector, (int)yVector, 255);
+                    Color color = Color.FromArgb(255, (int)xVector, (int)yVector, 255/*(int)zVector*/);
 
                     normalMap.SetPixel(x, y, color);
                 }
