@@ -4,12 +4,12 @@ using Diamond_Square.Interfaces;
 
 namespace Diamond_Square.Models
 {
-    public class Normalizator : INormalization
+    public class Normalizer : INormalization
     {
         private readonly int _min;
         private readonly int _max;
 
-        public Normalizator(int min, int max)
+        public Normalizer(int min, int max)
         {
             _min = min;
             _max = max;

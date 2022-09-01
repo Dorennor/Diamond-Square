@@ -12,7 +12,7 @@ namespace Diamond_Square.Models
         private static readonly float _max = 1;
 
         private IRandomSeed _randomSeed;
-        private INormalization _normalizator;
+        private INormalization _normalizer;
         private float[,] heightmap;
 
         public HeightMapping()
@@ -129,7 +129,7 @@ namespace Diamond_Square.Models
         public int[,] GenerateHeightMap(IRandomGenerator randomGenerator)
         {
             _randomSeed = new RandomSeed(randomGenerator);
-            _normalizator = new Normalizator(0, 255);
+            _normalizer = new Normalizer(0, 255);
 
             heightmap[0, 0] = randomGenerator.NextFloat(0.3f, 0.6f);
             heightmap[0, YSize - 1] = randomGenerator.NextFloat(0.3f, 0.6f);
@@ -147,7 +147,7 @@ namespace Diamond_Square.Models
                 }
             }
 
-            return _normalizator.Normalize(heightmap);
+            return _normalizer.Normalize(heightmap);
         }
     }
 }
