@@ -29,6 +29,7 @@ namespace Diamond_Square.ViewModels
 
         public MainViewModel()
         {
+            _randomGenerator = new RandomGenerator();
             _heightMapping = new HeightMapping();
             _normalMapping = new NormalMapping();
 
@@ -49,10 +50,6 @@ namespace Diamond_Square.ViewModels
                     if (Seed != null)
                     {
                         _randomGenerator = new RandomGenerator(Seed);
-                    }
-                    else
-                    {
-                        _randomGenerator = new RandomGenerator();
                     }
 
                     _bitmap = _heightMapping.GenerateHeightMap(_randomGenerator);
