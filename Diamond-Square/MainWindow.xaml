@@ -77,7 +77,8 @@
                 <Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <Image Name="FractalImage"
-                               Source="{Binding ImageSource}" />
+                               Source="{Binding ImageSource}"
+                               Margin="5"/>
                     </Border>
                 </Grid>
             </DockPanel>
