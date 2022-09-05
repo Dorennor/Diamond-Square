@@ -1,7 +1,9 @@
-﻿namespace Diamond_Square.Interfaces
+﻿using System.Drawing;
+
+namespace Diamond_Square.Interfaces
 {
     public interface IHeightMapping
     {
-        int[,] GenerateHeightMap(IRandomGenerator randomGenerator);
+        Bitmap GenerateHeightMap(IRandomGenerator randomGenerator);
     }
 }

@@ -3,9 +3,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:MainViewModel="clr-namespace:Diamond_Square.ViewModels"
         mc:Ignorable="d"
         Title="Diamond-Square"
         Height="600" Width="800">
+
+    <Window.DataContext>
+        <MainViewModel:MainViewModel></MainViewModel:MainViewModel>
+    </Window.DataContext>
 
     <Border BorderBrush="Black" BorderThickness="1">
         <Grid Margin="10">
@@ -15,6 +20,7 @@
                         <StackPanel Orientation="Vertical">
                             <Button Name="DrawHeightMapButton"
                                     Click="DrawHeightMapButton_Click"
+                                    Command="{Binding HeightMapCommand}"
                                     Content="Draw height map"
                                     FontFamily="{StaticResource Roboto-Regular}"
                                     FontSize="14"
@@ -23,15 +29,8 @@
                                     Padding="5"></Button>
                             <Button Name="DrawNormalMapButton"
                                     Click="DrawNormalMapButton_Click"
+                                    Command="{Binding NormalMapCommand}"
                                     Content="Draw normal map"
-                                    FontFamily="{StaticResource Roboto-Regular}"
-                                    FontSize="14"
-                                    MaxHeight="30"
-                                    Margin="5"
-                                    Padding="5"></Button>
-                            <Button Name="StopButton"
-                                    Click="StopButton_Click"
-                                    Content="Stop"
                                     FontFamily="{StaticResource Roboto-Regular}"
                                     FontSize="14"
                                     MaxHeight="30"
@@ -39,6 +38,7 @@
                                     Padding="5"></Button>
                             <Button Name="CleanButton"
                                     Click="CleanButton_Click"
+                                    Command="{Binding CleanImageCommand}"
                                     Content="Clean"
                                     FontFamily="{StaticResource Roboto-Regular}"
                                     FontSize="14"
@@ -58,12 +58,27 @@
                                      MaxHeight="30"
                                      Margin="5"
                                      Padding="5"></TextBox>
+                            <Label Content="Grey palette"
+                                   FontFamily="{StaticResource Roboto-Regular}"
+                                   FontSize="14"
+                                   MaxHeight="30"
+                                   Margin="5"
+                                   Padding="5"></Label>
+                            <CheckBox Name="IsGreyComboBox"
+                                      IsChecked="{Binding IsGreyPalette}"
+                                      FontFamily="{StaticResource Roboto-Regular}"
+                                      FontSize="14"
+                                      MaxHeight="30"
+                                      Margin="5"
+                                      Padding="5"
+                                ></CheckBox>
                         </StackPanel>
                     </Border>
                 </Grid>
                 <Grid>
                     <Border BorderBrush="Black" BorderThickness="1">
-                        <Image Name="FractalImage"></Image>
+                        <Image Name="FractalImage"
+                               Source="{Binding ImageSource}"></Image>
                     </Border>
                 </Grid>
             </DockPanel>

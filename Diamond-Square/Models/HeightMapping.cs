@@ -1,38 +1,37 @@
-﻿using Diamond_Square.Interfaces;
+﻿using System.Drawing;
+using Diamond_Square.Interfaces;
 
 namespace Diamond_Square.Models
 {
     public class HeightMapping : IHeightMapping
     {
-        public static readonly int YSize = 1025;
-        public static readonly int XSize = 1025;
+        public static readonly int Size = 1025;
 
-        private static readonly float _roughness = 5f;
         private static readonly float _min = -1;
         private static readonly float _max = 1;
 
         private IRandomSeed _randomSeed;
         private INormalization _normalizator;
-        private float[,] heightmap;
+        private float[,] heightMap;
 
         public HeightMapping()
         {
-            heightmap = new float[XSize, YSize];
+            heightMap = new float[Size, Size];
         }
 
         private void Diamond(int leftX, int leftY, int rightX, int rightY)
         {
             int middle = (rightX - leftX) / 2;
 
-            float a = heightmap[leftX, leftY];
-            float b = heightmap[leftX, rightY];
-            float c = heightmap[rightX, rightY];
-            float d = heightmap[rightX, leftY];
+            float a = heightMap[leftX, leftY];
+            float b = heightMap[leftX, rightY];
+            float c = heightMap[rightX, rightY];
+            float d = heightMap[rightX, leftY];
 
             int centerX = leftX + middle;
             int centerY = leftY + middle;
 
-            heightmap[centerX, centerY] = ((a + b + c + d) / 4) + _randomSeed.GetRandomSeed(_min, _max);
+            heightMap[centerX, centerY] = ((a + b + c + d) / 4) + _randomSeed.GetRandomSeed(_min, _max);
         }
 
         private void Square(int sideCenterX, int sideCenterY, int middle)
@@ -41,50 +40,50 @@ namespace Diamond_Square.Models
 
             if (sideCenterY - middle >= 0)
             {
-                a = heightmap[sideCenterX, sideCenterY - middle];
+                a = heightMap[sideCenterX, sideCenterY - middle];
             }
             else
             {
-                a = heightmap[sideCenterX, YSize - middle];
+                a = heightMap[sideCenterX, Size - middle];
             }
 
             if (sideCenterX - middle >= 0)
             {
-                b = heightmap[sideCenterX - middle, sideCenterY];
+                b = heightMap[sideCenterX - middle, sideCenterY];
             }
             else
             {
-                b = heightmap[XSize - middle, sideCenterY];
+                b = heightMap[Size - middle, sideCenterY];
             }
 
-            if (sideCenterY + middle < YSize)
+            if (sideCenterY + middle < Size)
             {
-                c = heightmap[sideCenterX, sideCenterY + middle];
+                c = heightMap[sideCenterX, sideCenterY + middle];
             }
             else
             {
-                c = heightmap[sideCenterX, middle];
+                c = heightMap[sideCenterX, middle];
             }
 
-            if (sideCenterX + middle < XSize)
+            if (sideCenterX + middle < Size)
             {
-                d = heightmap[sideCenterX + middle, sideCenterY];
+                d = heightMap[sideCenterX + middle, sideCenterY];
             }
             else
             {
-                d = heightmap[middle, sideCenterY];
+                d = heightMap[middle, sideCenterY];
             }
 
-            if (sideCenterX + middle < YSize)
+            if (sideCenterX + middle < Size)
             {
-                d = heightmap[sideCenterX + middle, sideCenterY];
+                d = heightMap[sideCenterX + middle, sideCenterY];
             }
             else
             {
-                d = heightmap[middle, sideCenterY];
+                d = heightMap[middle, sideCenterY];
             }
 
-            heightmap[sideCenterX, sideCenterY] = ((a + b + c + d) / 4) + _randomSeed.GetRandomSeed(_min, _max);
+            heightMap[sideCenterX, sideCenterY] = ((a + b + c + d) / 4) + _randomSeed.GetRandomSeed(_min, _max);
         }
 
         private void DiamondSquare(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
@@ -105,19 +104,19 @@ namespace Diamond_Square.Models
 
             if (middle > 0)
             {
-                float a = heightmap[middleX, middleY];
-                float b = heightmap[middleX, rightY];
-                float c = heightmap[rightX, rightY];
-                float d = heightmap[rightX, middleY];
+                float a = heightMap[middleX, middleY];
+                float b = heightMap[middleX, rightY];
+                float c = heightMap[rightX, rightY];
+                float d = heightMap[rightX, middleY];
 
                 int centerX = middleX + middle;
                 int centerY = middleY + middle;
 
-                heightmap[centerX, centerY] = ((a + b + c + d) / 4) + _randomSeed.GetRandomSeed(_min, _max);
-                heightmap[middleX, centerY] = ((a + b) / 2) + _randomSeed.GetRandomSeed(_min, _max);
-                heightmap[rightX, centerY] = ((c + d) / 2) + _randomSeed.GetRandomSeed(_min, _max);
-                heightmap[centerX, middleY] = ((a + d) / 2) + _randomSeed.GetRandomSeed(_min, _max);
-                heightmap[centerX, rightY] = ((b + c) / 2) + _randomSeed.GetRandomSeed(_min, _max);
+                heightMap[centerX, centerY] = ((a + b + c + d) / 4) + _randomSeed.GetRandomSeed(_min, _max);
+                heightMap[middleX, centerY] = ((a + b) / 2) + _randomSeed.GetRandomSeed(_min, _max);
+                heightMap[rightX, centerY] = ((c + d) / 2) + _randomSeed.GetRandomSeed(_min, _max);
+                heightMap[centerX, middleY] = ((a + d) / 2) + _randomSeed.GetRandomSeed(_min, _max);
+                heightMap[centerX, rightY] = ((b + c) / 2) + _randomSeed.GetRandomSeed(_min, _max);
 
                 MiddlePointDisplacement(middleX, middleY, centerX, centerY);
                 MiddlePointDisplacement(middleX, middleY + middle, middleX + middle, rightY);
@@ -126,28 +125,40 @@ namespace Diamond_Square.Models
             }
         }
 
-        public int[,] GenerateHeightMap(IRandomGenerator randomGenerator)
+        public Bitmap GenerateHeightMap(IRandomGenerator randomGenerator)
         {
             _randomSeed = new RandomSeed(randomGenerator);
-            _normalizator = new Normalizator(0, 255);
+            _normalizator = new Normalizator(1, 255);
 
-            heightmap[0, 0] = randomGenerator.NextFloat(0.3f, 0.6f);
-            heightmap[0, YSize - 1] = randomGenerator.NextFloat(0.3f, 0.6f);
-            heightmap[XSize - 1, YSize - 1] = randomGenerator.NextFloat(0.3f, 0.6f);
-            heightmap[XSize - 1, 0] = randomGenerator.NextFloat(0.3f, 0.6f);
+            heightMap[0, 0] = randomGenerator.NextFloat(1f, 10f);
+            heightMap[0, Size - 1] = randomGenerator.NextFloat(1f, 10f);
+            heightMap[Size - 1, Size - 1] = randomGenerator.NextFloat(1f, 10f);
+            heightMap[Size - 1, 0] = randomGenerator.NextFloat(1f, 10f);
 
-            for (int middle = YSize - 1; middle > 0; middle /= 2)
+            for (int middle = Size - 1; middle > 0; middle /= 2)
             {
-                for (int x = 0; x < XSize - 1; x += middle)
+                for (int x = 0; x < Size - 1; x += middle)
                 {
-                    for (int y = 0; y < YSize - 1; y += middle)
+                    for (int y = 0; y < Size - 1; y += middle)
                     {
                         DiamondSquare(x, y, x + middle, y + middle, randomGenerator);
                     }
                 }
             }
 
-            return _normalizator.Normalize(heightmap);
+            int[,] normalizedHeightMap = _normalizator.Normalize(heightMap);
+
+            Bitmap _bitmap = new Bitmap(Size, Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                for (int j = 0; j < Size; j++)
+                {
+                    _bitmap.SetPixel(i, j, Color.FromArgb(255, normalizedHeightMap[i, j], normalizedHeightMap[i, j], normalizedHeightMap[i, j]));
+                }
+            }
+
+            return _bitmap;
         }
     }
 }

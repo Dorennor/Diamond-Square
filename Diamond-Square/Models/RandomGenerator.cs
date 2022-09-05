@@ -13,9 +13,9 @@ namespace Diamond_Square.Models
             random = new Random();
         }
 
-        public RandomGenerator(int seed)
+        public RandomGenerator(int? seed)
         {
-            random = new Random(seed);
+            random = new Random((int)seed);
         }
 
         public float NextFloat(float min, float max)
