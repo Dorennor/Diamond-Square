@@ -128,7 +128,7 @@ namespace Diamond_Square.Models
         public Bitmap GenerateHeightMap(IRandomGenerator randomGenerator)
         {
             _randomSeed = new RandomSeed(randomGenerator);
-            _normalizator = new Normalizator(1, 255);
+            _normalizator = new Normalizator(0, 255);
 
             heightMap[0, 0] = randomGenerator.NextFloat(1f, 10f);
             heightMap[0, Size - 1] = randomGenerator.NextFloat(1f, 10f);
