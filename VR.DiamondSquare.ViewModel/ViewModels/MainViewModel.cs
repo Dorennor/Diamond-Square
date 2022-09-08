@@ -155,6 +155,8 @@ public class MainViewModel : BasicViewModel
         get => _bitmapImage;
         set
         {
+            if (value == null) return;
+
             _bitmapImage = value;
             OnPropertyChanged();
         }
