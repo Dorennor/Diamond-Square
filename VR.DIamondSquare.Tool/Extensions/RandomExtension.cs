@@ -1,4 +1,4 @@
-﻿namespace VR.DIamondSquare.Tools.Extensions
+﻿namespace VR.DiamondSquare.Tools.Extensions
 {
     public static class RandomDoubleFromRangeExtension
     {

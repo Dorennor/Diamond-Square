@@ -1,6 +1,7 @@
-﻿using VR.DiamondSquare.View.Interfaces;
+﻿using VR.DiamondSquare.Model.Interfaces;
+using VR.DiamondSquare.Tools.Extensions;
 
-namespace VR.DiamondSquare.View.Models
+namespace VR.DiamondSquare.Model.Models
 {
     public class RandomGenerator : IRandomGenerator
     {
@@ -11,9 +12,9 @@ namespace VR.DiamondSquare.View.Models
             random = new Random();
         }
 
-        public RandomGenerator(int? seed)
+        public RandomGenerator(int seed)
         {
-            random = new Random((int)seed);
+            random = new Random(seed);
         }
 
         public float NextFloat(float min, float max)

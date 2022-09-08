@@ -3,15 +3,15 @@ using System.Globalization;
 using System.Windows.Data;
 using VR.DiamondSquare.Tool.Extensions;
 
-namespace VR.DiamondSquare.Tool.Converters
+namespace VR.DiamondSquare.Tools.Converters
 {
     public class BitmapSourceConverter : IValueConverter
     {
-        public static IValueConverter Converter { get; private set; }
+        public static IValueConverter Converter { get; private set; } = new BitmapSourceConverter();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var bitmap = (Bitmap)value;
+            Bitmap bitmap = (Bitmap)value;
 
             if (bitmap == null)
             {

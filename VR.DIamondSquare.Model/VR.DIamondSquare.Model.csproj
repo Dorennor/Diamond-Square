@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VR.DIamondSquare.Tool\VR.DIamondSquare.Tools.csproj" />
+    <ProjectReference Include="..\VR.DIamondSquare.Tool\VR.DiamondSquare.Tools.csproj" />
   </ItemGroup>
 
 </Project>

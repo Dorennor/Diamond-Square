@@ -1,7 +1,7 @@
-﻿namespace VR.DiamondSquare.View.Interfaces
+﻿namespace VR.DiamondSquare.Model.Interfaces
 {
     public interface INormalizator
     {
-        int[,] Normalize(float[,] heightMap);
+        float[,] Normalize(float[,] heightMap);
     }
 }

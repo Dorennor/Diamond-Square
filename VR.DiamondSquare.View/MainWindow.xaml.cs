@@ -1,45 +1,49 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
-namespace VR.DiamondSquare.View
+namespace VR.DiamondSquare.ViewModel;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    /// <summary>
+    /// Regex that filtered only range strings, for example "1.2 ; 10.5" or "1, 19".
+    /// </summary>
+    private Regex floatRangeRegex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
+
+    /// <summary>
+    /// Regex that filtered only int strings.
+    /// </summary>
+    private Regex onlyIntRegex = new Regex("[^0-9]+");
+
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
+        InitializeComponent();
+    }
 
-            DrawHeightMapButton.IsEnabled = true;
-            DrawNormalMapButton.IsEnabled = false;
-            CleanButton.IsEnabled = false;
-        }
-
-        private void DrawHeightMapButton_Click(object sender, RoutedEventArgs e)
+    private void RangeTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (!floatRangeRegex.IsMatch(RangeTextBox.Text))
         {
-            DrawHeightMapButton.IsEnabled = false;
-            DrawNormalMapButton.IsEnabled = true;
-            CleanButton.IsEnabled = true;
-        }
+            RangeTextBox.Text = string.Empty;
 
-        private void DrawNormalMapButton_Click(object sender, RoutedEventArgs e)
-        {
-            DrawHeightMapButton.IsEnabled = false;
-            DrawNormalMapButton.IsEnabled = false;
-            CleanButton.IsEnabled = true;
+            MessageBox.Show("Wrong input, write range as \"min;max\"");
         }
+    }
 
-        private void CleanButton_Click(object sender, RoutedEventArgs e)
+    private void SizeTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (Convert.ToInt32(SizeTextBox.Text) % 2 == 0)
         {
-            DrawHeightMapButton.IsEnabled = true;
-            DrawNormalMapButton.IsEnabled = false;
-            CleanButton.IsEnabled = false;
-        }
+            SizeTextBox.Text = string.Empty;
 
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
+            MessageBox.Show("Wrong input, write odd number that bigger than 0");
         }
+    }
+
+    private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+    {
+        e.Handled = onlyIntRegex.IsMatch(e.Text);
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using VR.DiamondSquare.Model.Interfaces;
+using VR.DiamondSquare.Model.Models;
+using VR.DiamondSquare.ViewModel.ViewModels;
 
-namespace VR.DiamondSquare.View
+namespace VR.DiamondSquare.ViewModel
 {
     public partial class App : Application
     {
@@ -15,7 +18,15 @@ namespace VR.DiamondSquare.View
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<MainWindow>();
+            services.AddTransient<INormalMapGenerator, NormalMapGenerator>();
+            services.AddTransient<IHeightMapGenerator, HeightMapGenerator>();
+
+            services.AddSingleton<IRandomGenerator, RandomGenerator>();
+            services.AddSingleton<MainViewModel>();
+            services.AddSingleton<MainWindow>(services => new MainWindow
+            {
+                DataContext = services.GetService<MainViewModel>()
+            });
         }
 
         protected override async void OnStartup(StartupEventArgs e)

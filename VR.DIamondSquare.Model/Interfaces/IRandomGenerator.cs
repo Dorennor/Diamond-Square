@@ -1,7 +1,6 @@
-﻿namespace VR.DiamondSquare.View.Interfaces
+﻿namespace VR.DiamondSquare.Model.Interfaces;
+
+public interface IRandomGenerator
 {
-    public interface IRandomGenerator
-    {
-        float NextFloat(float min, float max);
-    }
+    float NextFloat(float min, float max);
 }

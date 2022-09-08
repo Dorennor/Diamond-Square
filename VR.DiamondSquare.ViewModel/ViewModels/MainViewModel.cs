@@ -1,129 +1,216 @@
-﻿using System.ComponentModel;
-using System.Drawing;
-using System.Runtime.CompilerServices;
-using VR.DiamondSquare.View.Core;
+﻿using System.Drawing;
+using System.Text.RegularExpressions;
+using VR.DiamondSquare.Model.Interfaces;
+using VR.DiamondSquare.Model.Models;
+using VR.DiamondSquare.ViewModel.Core;
+using VR.DiamondSquare.ViewModel.Models;
 
-namespace VR.DiamondSquare.View.ViewModels
+namespace VR.DiamondSquare.ViewModel.ViewModels;
+
+public class MainViewModel : BasicViewModel
 {
-    public class MainViewModel : INotifyPropertyChanged
+    /// <summary>
+    /// Regex that filtered only range strings, for example "1.2 ; 10.5" or "1, 19".
+    /// </summary>
+    private Regex regex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
+
+    private Color[] _colors = new Color[256];
+
+    private Bitmap _bitmapImage;
+    private GreyNormalMap _greyNormalMap;
+    private NormalMap _normalMap;
+    private string _range;
+    private int? _seed;
+    private bool _isGreyPalette;
+    private float? _min;
+    private float? _max;
+    private int? _size;
+
+    private float[,] _heightMap;
+
+    private IRandomGenerator _defaultRandomGenerator;
+    private IHeightMapGenerator _heightMapper;
+    private INormalMapGenerator _normalMapper;
+
+    private RelayCommand _generateHeightMapCommand;
+    private RelayCommand _generatNormalMapCommand;
+    private RelayCommand _cleanImageCommand;
+
+    public MainViewModel(IRandomGenerator defaultRandomGenerator, IHeightMapGenerator heightMapper, INormalMapGenerator normalMapper)
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
+        _defaultRandomGenerator = defaultRandomGenerator;
+        _heightMapper = heightMapper;
+        _normalMapper = normalMapper;
 
-        private BitmapSource _imageSource;
-        private Bitmap _bitmap;
-        private int? _seed;
-        private bool _isGreyPalette;
-
-        private static IRandomGenerator _randomGenerator;
-        private IHeightGenerator _heightMapping;
-        private INormalMapper _normalMapping;
-
-        private RelayCommand _heightMapCommand;
-        private RelayCommand _normalMapCommand;
-        private RelayCommand _cleanImageCommand;
-
-        public MainViewModel()
+        for (int i = 0; i < 256; i++)
         {
-            _randomGenerator = new RandomGenerator();
-            _heightMapping = new HeightGenerator();
-            _normalMapping = new NormalMapper();
-
-            Bitmap bitmap = new Bitmap(HeightGenerator.Size, HeightGenerator.Size);
-
-            Graphics graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(Color.White);
-
-            _bitmap = bitmap;
+            _colors[i] = Color.FromArgb(255, i, i, i);
         }
+    }
 
-        public RelayCommand HeightMapCommand
+    public RelayCommand GenerateHeightMapCommand
+    {
+        get
         {
-            get
+            return _generateHeightMapCommand ?? new RelayCommand(obj =>
             {
-                return _heightMapCommand ?? new RelayCommand(obj =>
+                if (Seed.HasValue)
                 {
-                    if (Seed != null)
+                    IRandomGenerator randomGenerator = new RandomGenerator((int)Seed);
+                    _heightMap = _heightMapper.GenerateHeightMap(randomGenerator, (int)_size, (float)_min, (float)_max);
+
+                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
+
+                    for (int i = 0; i < _heightMap.GetLength(0); i++)
                     {
-                        _randomGenerator = new RandomGenerator(Seed);
+                        for (int j = 0; j < _heightMap.GetLength(1); j++)
+                        {
+                            bitmap.SetPixel(i, j, _colors[(int)Math.Round(_heightMap[i, j])]);
+                        }
                     }
 
-                    _bitmap = _heightMapping.GenerateHeightMap(_randomGenerator);
-                    ImageSource = _bitmap.GetImageSource();
-                });
-            }
-        }
-
-        public RelayCommand NormalMapCommand
-        {
-            get
-            {
-                return _normalMapCommand ?? new RelayCommand(obj =>
+                    BitmapImage = bitmap;
+                }
+                else
                 {
-                    _bitmap = _normalMapping.GenerateNormalMap(_bitmap, IsGreyPalette);
-                    ImageSource = _bitmap.GetImageSource();
-                });
-            }
-        }
+                    _heightMap = _heightMapper.GenerateHeightMap(_defaultRandomGenerator, (int)_size, (float)_min, (float)_max);
 
-        public RelayCommand CleanImageCommand
+                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
+
+                    for (int i = 0; i < _heightMap.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < _heightMap.GetLength(1); j++)
+                        {
+                            bitmap.SetPixel(i, j, _colors[(int)Math.Round(_heightMap[i, j])]);
+                        }
+                    }
+
+                    BitmapImage = bitmap;
+                }
+            }, obj => _heightMap == null && _size.HasValue && _min.HasValue && _max.HasValue);
+        }
+    }
+
+    public RelayCommand GeneratNormalMapCommand
+    {
+        get
         {
-            get
+            return _generatNormalMapCommand ?? new RelayCommand(obj =>
             {
-                return _cleanImageCommand ?? new RelayCommand(obj =>
+                if (IsGreyPalette)
                 {
-                    Bitmap bitmap = new Bitmap(HeightGenerator.Size, HeightGenerator.Size);
+                    _greyNormalMap = _normalMapper.GenerateGreyNormalMap(_heightMap);
 
-                    Graphics graphics = Graphics.FromImage(bitmap);
-                    graphics.Clear(Color.White);
+                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
 
-                    _bitmap = bitmap;
-                    ImageSource = _bitmap.GetImageSource();
-                });
-            }
+                    for (int i = 0; i < _heightMap.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < _heightMap.GetLength(1); j++)
+                        {
+                            Color color = Color.FromArgb(255, (int)Math.Round(_greyNormalMap.XVector[i, j]), (int)Math.Round(_greyNormalMap.YVector[i, j]), (int)Math.Round(_greyNormalMap.ZVector[i, j]));
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+
+                    BitmapImage = bitmap;
+                }
+                else
+                {
+                    _normalMap = _normalMapper.GenerateNormalMap(_heightMap);
+
+                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
+
+                    for (int i = 0; i < _heightMap.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < _heightMap.GetLength(1); j++)
+                        {
+                            Color color = Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j]), (int)Math.Round(_normalMap.YVector[i, j]), 255);
+                            bitmap.SetPixel(i, j, color);
+                        }
+                    }
+
+                    BitmapImage = bitmap;
+                }
+            }, obj => _heightMap != null && _greyNormalMap == null && _normalMap == null && _size.HasValue && _min.HasValue && _max.HasValue);
         }
+    }
 
-        public BitmapSource ImageSource
+    public RelayCommand CleanImageCommand
+    {
+        get
         {
-            get
+            return _cleanImageCommand ?? new RelayCommand(obj =>
             {
-                return _imageSource;
-            }
-            set
-            {
-                _imageSource = value;
-                OnPropertyChanged("ImageSource");
-            }
+                BitmapImage = null;
+                _heightMap = null;
+
+                if (_greyNormalMap != null) _greyNormalMap = null;
+                if (_normalMap != null) _normalMap = null;
+            }, obj => _bitmapImage != null || _heightMap != null || _greyNormalMap != null || _normalMap != null);
         }
+    }
 
-        public int? Seed
+    public Bitmap BitmapImage
+    {
+        get => _bitmapImage;
+        set
         {
-            get
-            {
-                return _seed;
-            }
-            set
-            {
-                _seed = Convert.ToInt32(value);
-                OnPropertyChanged("Seed");
-            }
+            if (value == null) return;
+
+            _bitmapImage = value;
+            OnPropertyChanged();
         }
+    }
 
-        public bool IsGreyPalette
+    public int? Seed
+    {
+        get => _seed;
+        set
         {
-            get
-            {
-                return _isGreyPalette;
-            }
-            set
-            {
-                _isGreyPalette = value;
-                OnPropertyChanged("IsGreyPalette");
-            }
+            if (value == null) return;
+
+            _seed = value;
+            OnPropertyChanged();
         }
+    }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    public bool IsGreyPalette
+    {
+        get => _isGreyPalette;
+        set
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            _isGreyPalette = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string Range
+    {
+        get => _range;
+        set
+        {
+            if (value == string.Empty) return;
+
+            _range = value;
+
+            Match match = regex.Match(_range);
+
+            _min = Convert.ToSingle(match.Groups["min"].Value);
+            _max = Convert.ToSingle(match.Groups["max"].Value);
+
+            OnPropertyChanged();
+        }
+    }
+
+    public int? Size
+    {
+        get => _size;
+        set
+        {
+            if (value == null) return;
+
+            _size = value;
+            OnPropertyChanged();
         }
     }
 }
