@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using VR.DiamondSquare.Tools.Extensions;
 
 namespace VR.DiamondSquare.ViewModel;
 
@@ -34,11 +35,21 @@ public partial class MainWindow : Window
 
     private void SizeTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        if (Convert.ToInt32(SizeTextBox.Text) % 2 == 0)
+        var number = Convert.ToInt32(SizeTextBox.Text);
+
+        if (number % 2 == 0)
+        {
+            MessageBox.Show("Wrong input, write odd number that is a number that is a power of 2 and + 1");
+            return;
+        }
+
+        number--;
+
+        if (!number.IsPowerOfTwo())
         {
             SizeTextBox.Text = string.Empty;
 
-            MessageBox.Show("Wrong input, write odd number that bigger than 0");
+            MessageBox.Show("Wrong input, write odd number that is a number that is a power of 2 and + 1");
         }
     }
 
