@@ -3,20 +3,16 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using VR.DiamondSquare.Tools.Extensions;
+using VR.DiamondSquare.ViewModel.ViewModels;
 
 namespace VR.DiamondSquare.ViewModel;
 
 public partial class MainWindow : Window
 {
     /// <summary>
-    /// Regex that filtered only range strings, for example "1.2 ; 10.5" or "1, 19".
-    /// </summary>
-    private Regex floatRangeRegex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
-
-    /// <summary>
     /// Regex that filtered only int strings.
     /// </summary>
-    private Regex onlyIntRegex = new Regex("[^0-9]+");
+    private Regex onlyIntRegex = new Regex(@"^[0-9]{0,10}$");
 
     public MainWindow()
     {
@@ -25,37 +21,37 @@ public partial class MainWindow : Window
 
     private void RangeTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        if (!floatRangeRegex.IsMatch(RangeTextBox.Text))
+        Match match = MainViewModel.FloatRangeRegex.Match(RangeTextBox.Text);
+
+        if (!match.Success || !(Convert.ToSingle(match.Groups["max"].Value) > Convert.ToSingle(match.Groups["min"].Value)))
         {
             RangeTextBox.Text = string.Empty;
 
-            MessageBox.Show("Wrong input, write range as \"min;max\"");
+            MessageBox.Show("Wrong input, write range as \"min;max\".");
         }
     }
 
     private void SizeTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        var number = Convert.ToInt32(SizeTextBox.Text);
-
-        if (number % 2 == 0)
+        if (SizeTextBox.Text != string.Empty)
         {
-            MessageBox.Show("Wrong input, write odd number that is a number that is a power of 2 and + 1");
-            SizeTextBox.Text = string.Empty;
-            return;
+            var number = Convert.ToInt32(SizeTextBox.Text);
+
+            if (number % 2 == 0 || !(number - 1).IsPowerOfTwo())
+            {
+                MessageBox.Show("Wrong input, write odd number that is a number that is a power of 2 and + 1.");
+
+                SizeTextBox.Text = string.Empty;
+            }
         }
-
-        number--;
-
-        if (!number.IsPowerOfTwo())
+        else
         {
-            SizeTextBox.Text = string.Empty;
-
-            MessageBox.Show("Wrong input, write odd number that is a number that is a power of 2 and + 1");
+            MessageBox.Show("Value can't be empty.");
         }
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
     {
-        e.Handled = onlyIntRegex.IsMatch(e.Text);
+        e.Handled = !onlyIntRegex.IsMatch(e.Text);
     }
 }

@@ -20,17 +20,19 @@
                                 VerticalContentAlignment="Center"
                                 FontFamily="{StaticResource Roboto-Regular}"
                                 FontSize="14"
-                                MaxHeight="30"
+                                MinHeight="30"
                                 Margin="5" />
+
                         <Button Name="DrawNormalMapButton"
-                                Command="{Binding GeneratNormalMapCommand}"
+                                Command="{Binding GenerateNormalMapCommand}"
                                 Content="Draw normal map"
                                 HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center"
                                 FontFamily="{StaticResource Roboto-Regular}"
                                 FontSize="14"
-                                MaxHeight="30"
+                                MinHeight="30"
                                 Margin="5" />
+
                         <Button Name="CleanButton"
                                 Command="{Binding CleanImageCommand}"
                                 Content="Clean"
@@ -38,13 +40,15 @@
                                 VerticalContentAlignment="Center"
                                 FontFamily="{StaticResource Roboto-Regular}"
                                 FontSize="14"
-                                MaxHeight="30"
+                                MinHeight="30"
                                 Margin="5" />
+
                         <Label Content="Seed:"
                                FontFamily="{StaticResource Roboto-Regular}"
                                FontSize="14"
-                               MaxHeight="30"
+                               MinHeight="30"
                                Margin="5, 5, 5, 0" />
+
                         <TextBox Name="SeedTextBox"
                                  Text="{Binding Seed}"
                                  PreviewTextInput="NumberValidationTextBox"
@@ -52,13 +56,15 @@
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
                                  FontSize="14"
-                                 MaxHeight="30"
+                                 MinHeight="30"
                                  Margin="5, 0, 5, 5" />
+
                         <Label Content="Size:"
                                FontFamily="{StaticResource Roboto-Regular}"
                                FontSize="14"
-                               MaxHeight="30"
+                               MinHeight="30"
                                Margin="5, 5, 5, 0" />
+
                         <TextBox Name="SizeTextBox"
                                  PreviewTextInput="NumberValidationTextBox"
                                  LostFocus="SizeTextBox_LostFocus"
@@ -67,13 +73,15 @@
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
                                  FontSize="14"
-                                 MaxHeight="30"
+                                 MinHeight="30"
                                  Margin="5, 0, 5, 5" />
+
                         <Label Content="Range:"
                                FontFamily="{StaticResource Roboto-Regular}"
                                FontSize="14"
-                               MaxHeight="30"
+                               MinHeight="30"
                                Margin="5, 5, 5, 0" />
+
                         <TextBox Name="RangeTextBox"
                                  LostFocus="RangeTextBox_LostFocus"
                                  Text="{Binding Range}"
@@ -81,15 +89,16 @@
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
                                  FontSize="14"
-                                 MaxHeight="30"
+                                 MinHeight="30"
                                  Margin="5, 0, 5, 5" />
-                        <CheckBox Name="IsGreyComboBox"
-                                  IsChecked="{Binding IsGreyPalette}"
+
+                        <CheckBox Name="IsAlternativeComboBox"
+                                  IsChecked="{Binding IsAlternativePalette}"
                                   FontFamily="{StaticResource Roboto-Regular}"
                                   FontSize="14"
-                                  MaxHeight="30"
+                                  MinHeight="30"
                                   Margin="5">
-                            Grey palette
+                            Alternative palette
                         </CheckBox>
                     </StackPanel>
                 </Border>

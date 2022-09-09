@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace VR.DiamondSquare.ViewModel.Core;
+namespace VR.DiamondSquare.ViewModel.Utils;
 
 public class RelayCommand : ICommand
 {

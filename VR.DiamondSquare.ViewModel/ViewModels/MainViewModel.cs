@@ -2,8 +2,9 @@
 using System.Text.RegularExpressions;
 using VR.DiamondSquare.Model.Interfaces;
 using VR.DiamondSquare.Model.Models;
-using VR.DiamondSquare.ViewModel.Core;
-using VR.DiamondSquare.ViewModel.Models;
+using VR.DiamondSquare.Model.Services;
+using VR.DiamondSquare.ViewModel.Abstractions;
+using VR.DiamondSquare.ViewModel.Utils;
 
 namespace VR.DiamondSquare.ViewModel.ViewModels;
 
@@ -12,20 +13,20 @@ public class MainViewModel : BasicViewModel
     /// <summary>
     /// Regex that filtered only range strings, for example "1.2 ; 10.5" or "1, 19".
     /// </summary>
-    private Regex regex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
+    public static readonly Regex FloatRangeRegex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
 
-    private Color[] _colors = new Color[256];
+    private static readonly Color[] _colors = new Color[256];
 
     private Bitmap _bitmapImage;
-    private GreyNormalMap _greyNormalMap;
+    private AlternativeNormalMap _alternativeNormalMap;
     private NormalMap _normalMap;
+
     private string _range;
     private int? _seed;
-    private bool _isGreyPalette;
-    private float? _min;
-    private float? _max;
-    private int? _size;
-
+    private bool _isAlternativePalette;
+    private float _min;
+    private float _max;
+    private int _size;
     private float[,] _heightMap;
 
     private IRandomGenerator _defaultRandomGenerator;
@@ -33,8 +34,16 @@ public class MainViewModel : BasicViewModel
     private INormalMapGenerator _normalMapper;
 
     private RelayCommand _generateHeightMapCommand;
-    private RelayCommand _generatNormalMapCommand;
+    private RelayCommand _generateNormalMapCommand;
     private RelayCommand _cleanImageCommand;
+
+    static MainViewModel()
+    {
+        for (int i = 0; i < 256; i++)
+        {
+            _colors[i] = Color.FromArgb(255, i, i, i);
+        }
+    }
 
     public MainViewModel(IRandomGenerator defaultRandomGenerator, IHeightMapGenerator heightMapper, INormalMapGenerator normalMapper)
     {
@@ -42,10 +51,10 @@ public class MainViewModel : BasicViewModel
         _heightMapper = heightMapper;
         _normalMapper = normalMapper;
 
-        for (int i = 0; i < 256; i++)
-        {
-            _colors[i] = Color.FromArgb(255, i, i, i);
-        }
+        Size = 1025;
+        _min = 1;
+        _max = 10;
+        Range = $"{_min}; {_max}";
     }
 
     public RelayCommand GenerateHeightMapCommand
@@ -56,82 +65,38 @@ public class MainViewModel : BasicViewModel
             {
                 if (Seed.HasValue)
                 {
-                    IRandomGenerator randomGenerator = new RandomGenerator((int)Seed);
-                    _heightMap = _heightMapper.GenerateHeightMap(randomGenerator, (int)_size, (float)_min, (float)_max);
-
-                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
-
-                    for (int i = 0; i < _heightMap.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < _heightMap.GetLength(1); j++)
-                        {
-                            bitmap.SetPixel(i, j, _colors[(int)Math.Round(_heightMap[i, j])]);
-                        }
-                    }
-
-                    BitmapImage = bitmap;
+                    IRandomGenerator randomGenerator = new RandomGenerator(Seed.Value);
+                    _heightMap = _heightMapper.GenerateHeightMap(randomGenerator, _size, _min, _max);
                 }
                 else
                 {
-                    _heightMap = _heightMapper.GenerateHeightMap(_defaultRandomGenerator, (int)_size, (float)_min, (float)_max);
-
-                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
-
-                    for (int i = 0; i < _heightMap.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < _heightMap.GetLength(1); j++)
-                        {
-                            bitmap.SetPixel(i, j, _colors[(int)Math.Round(_heightMap[i, j])]);
-                        }
-                    }
-
-                    BitmapImage = bitmap;
+                    _heightMap = _heightMapper.GenerateHeightMap(_defaultRandomGenerator, _size, _min, _max);
                 }
-            }, obj => _heightMap == null && _size.HasValue && _min.HasValue && _max.HasValue);
+
+                BitmapImage = DrawBitmap(_size, (i, j) => _colors[(int)Math.Round(_heightMap[i, j])]);
+            }, obj => _heightMap == null && _max > _min);
         }
     }
 
-    public RelayCommand GeneratNormalMapCommand
+    public RelayCommand GenerateNormalMapCommand
     {
         get
         {
-            return _generatNormalMapCommand ?? new RelayCommand(obj =>
+            return _generateNormalMapCommand ?? new RelayCommand(obj =>
             {
-                if (IsGreyPalette)
+                if (IsAlternativePalette)
                 {
-                    _greyNormalMap = _normalMapper.GenerateGreyNormalMap(_heightMap);
+                    _alternativeNormalMap = _normalMapper.GenerateAlternativeNormalMap(_heightMap);
 
-                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
-
-                    for (int i = 0; i < _heightMap.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < _heightMap.GetLength(1); j++)
-                        {
-                            Color color = Color.FromArgb(255, (int)Math.Round(_greyNormalMap.XVector[i, j]), (int)Math.Round(_greyNormalMap.YVector[i, j]), (int)Math.Round(_greyNormalMap.ZVector[i, j]));
-                            bitmap.SetPixel(i, j, color);
-                        }
-                    }
-
-                    BitmapImage = bitmap;
+                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_alternativeNormalMap.XVector[i, j]), (int)Math.Round(_alternativeNormalMap.YVector[i, j]), (int)Math.Round(_alternativeNormalMap.ZVector[i, j])));
                 }
                 else
                 {
                     _normalMap = _normalMapper.GenerateNormalMap(_heightMap);
 
-                    using Bitmap bitmap = new Bitmap((int)_size, (int)_size);
-
-                    for (int i = 0; i < _heightMap.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < _heightMap.GetLength(1); j++)
-                        {
-                            Color color = Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j]), (int)Math.Round(_normalMap.YVector[i, j]), 255);
-                            bitmap.SetPixel(i, j, color);
-                        }
-                    }
-
-                    BitmapImage = bitmap;
+                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j]), (int)Math.Round(_normalMap.YVector[i, j]), 255));
                 }
-            }, obj => _heightMap != null && _greyNormalMap == null && _normalMap == null && _size.HasValue && _min.HasValue && _max.HasValue);
+            }, obj => _heightMap != null);
         }
     }
 
@@ -144,9 +109,15 @@ public class MainViewModel : BasicViewModel
                 BitmapImage = null;
                 _heightMap = null;
 
-                if (_greyNormalMap != null) _greyNormalMap = null;
-                if (_normalMap != null) _normalMap = null;
-            }, obj => _bitmapImage != null || _heightMap != null || _greyNormalMap != null || _normalMap != null);
+                if (_alternativeNormalMap != null)
+                {
+                    _alternativeNormalMap = null;
+                }
+                if (_normalMap != null)
+                {
+                    _normalMap = null;
+                }
+            }, obj => _bitmapImage != null);
         }
     }
 
@@ -155,6 +126,12 @@ public class MainViewModel : BasicViewModel
         get => _bitmapImage;
         set
         {
+            if (value == _bitmapImage)
+            {
+                return;
+            }
+
+            _bitmapImage?.Dispose();
             _bitmapImage = value;
             OnPropertyChanged();
         }
@@ -165,19 +142,22 @@ public class MainViewModel : BasicViewModel
         get => _seed;
         set
         {
-            if (value == null) return;
+            if (value == null || value == _seed)
+            {
+                return;
+            }
 
             _seed = value;
             OnPropertyChanged();
         }
     }
 
-    public bool IsGreyPalette
+    public bool IsAlternativePalette
     {
-        get => _isGreyPalette;
+        get => _isAlternativePalette;
         set
         {
-            _isGreyPalette = value;
+            _isAlternativePalette = value;
             OnPropertyChanged();
         }
     }
@@ -187,11 +167,14 @@ public class MainViewModel : BasicViewModel
         get => _range;
         set
         {
-            if (value == string.Empty) return;
+            if (value == string.Empty || value == _range)
+            {
+                return;
+            }
 
             _range = value;
 
-            Match match = regex.Match(_range);
+            Match match = FloatRangeRegex.Match(_range);
 
             _min = Convert.ToSingle(match.Groups["min"].Value);
             _max = Convert.ToSingle(match.Groups["max"].Value);
@@ -200,15 +183,33 @@ public class MainViewModel : BasicViewModel
         }
     }
 
-    public int? Size
+    public int Size
     {
         get => _size;
         set
         {
-            if (value == null) return;
+            if (value == 0 || value == _size)
+            {
+                return;
+            }
 
             _size = value;
             OnPropertyChanged();
         }
+    }
+
+    private static Bitmap DrawBitmap(int size, Func<int, int, Color> provider)
+    {
+        var bitmap = new Bitmap(size, size);
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                bitmap.SetPixel(i, j, provider(i, j));
+            }
+        }
+
+        return bitmap;
     }
 }

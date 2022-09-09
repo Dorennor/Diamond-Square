@@ -1,7 +1,7 @@
 ﻿using VR.DiamondSquare.Model.Interfaces;
 using VR.DiamondSquare.Tools.Extensions;
 
-namespace VR.DiamondSquare.Model.Models
+namespace VR.DiamondSquare.Model.Services
 {
     public class RandomGenerator : IRandomGenerator
     {

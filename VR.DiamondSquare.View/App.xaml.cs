@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using VR.DiamondSquare.Model.Interfaces;
-using VR.DiamondSquare.Model.Models;
+using VR.DiamondSquare.Model.Services;
 using VR.DiamondSquare.ViewModel.ViewModels;
 
 namespace VR.DiamondSquare.ViewModel

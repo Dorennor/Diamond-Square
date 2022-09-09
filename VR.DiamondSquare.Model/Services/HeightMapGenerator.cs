@@ -1,6 +1,6 @@
 ﻿using VR.DiamondSquare.Model.Interfaces;
 
-namespace VR.DiamondSquare.Model.Models;
+namespace VR.DiamondSquare.Model.Services;
 
 public class HeightMapGenerator : IHeightMapGenerator
 {
@@ -141,6 +141,8 @@ public class HeightMapGenerator : IHeightMapGenerator
             }
         }
 
-        return _normalizator.Normalize(_heightMap);
+        _normalizator.Normalize(_heightMap);
+
+        return _heightMap;
     }
 }

@@ -6,5 +6,5 @@ public interface INormalMapGenerator
 {
     NormalMap GenerateNormalMap(float[,] heightMap);
 
-    GreyNormalMap GenerateGreyNormalMap(float[,] heightMap);
+    AlternativeNormalMap GenerateAlternativeNormalMap(float[,] heightMap);
 }

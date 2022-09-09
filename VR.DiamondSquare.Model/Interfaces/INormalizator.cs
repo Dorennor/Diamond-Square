@@ -2,6 +2,6 @@
 {
     public interface INormalizator
     {
-        float[,] Normalize(float[,] heightMap);
+        void Normalize(float[,] heightMap);
     }
 }

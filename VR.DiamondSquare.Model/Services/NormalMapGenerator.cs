@@ -1,10 +1,12 @@
 ﻿using VR.DiamondSquare.Model.Interfaces;
+using VR.DiamondSquare.Model.Models;
 
-namespace VR.DiamondSquare.Model.Models;
+namespace VR.DiamondSquare.Model.Services;
 
 public class NormalMapGenerator : INormalMapGenerator
 {
     private INormalizator _normalizator;
+    private static readonly float _coefficient = 1f;
 
     public NormalMapGenerator()
     {
@@ -16,9 +18,9 @@ public class NormalMapGenerator : INormalMapGenerator
     /// Returns GreyNormalMap object with X, Y and Z float arrays, that contain values for R, G, B colors respectively for drawing it outside of model.
     /// </summary>
     /// <param name="heightMap"></param>
-    public GreyNormalMap GenerateGreyNormalMap(float[,] heightMap)
+    public AlternativeNormalMap GenerateAlternativeNormalMap(float[,] heightMap)
     {
-        GreyNormalMap result = new GreyNormalMap(heightMap.GetLength(0));
+        AlternativeNormalMap result = new AlternativeNormalMap(heightMap.GetLength(0));
 
         int size = heightMap.GetLength(0) - 1;
 
@@ -71,10 +73,8 @@ public class NormalMapGenerator : INormalMapGenerator
                     bottomSample = heightMap[x, y];
                 }
 
-                float coefficient = 1f;
-
-                xVector = (leftSample - rightSample) * coefficient;
-                yVector = (topSample - bottomSample) * coefficient;
+                xVector = (leftSample - rightSample) * _coefficient;
+                yVector = (topSample - bottomSample) * _coefficient;
                 zVector = (xVector + yVector) / 2;
 
                 result.XVector[x, y] = xVector;
@@ -83,9 +83,9 @@ public class NormalMapGenerator : INormalMapGenerator
             }
         }
 
-        result.XVector = _normalizator.Normalize(result.XVector);
-        result.YVector = _normalizator.Normalize(result.YVector);
-        result.ZVector = _normalizator.Normalize(result.ZVector);
+        _normalizator.Normalize(result.XVector);
+        _normalizator.Normalize(result.YVector);
+        _normalizator.Normalize(result.ZVector);
 
         return result;
     }
@@ -149,22 +149,16 @@ public class NormalMapGenerator : INormalMapGenerator
                     bottomSample = heightMap[x, y];
                 }
 
-                float coefficient = 1f;
-
-                xVector = (leftSample - rightSample) * coefficient;
-                yVector = (topSample - bottomSample) * coefficient;
+                xVector = (leftSample - rightSample) * _coefficient;
+                yVector = (topSample - bottomSample) * _coefficient;
 
                 result.XVector[x, y] = xVector;
                 result.YVector[y, x] = yVector;
-
-                //Color color = Color.FromArgb(255, (int)xVector, (int)yVector, 255);
-
-                //normalMap.SetPixel(x, y, color);
             }
         }
 
-        result.XVector = _normalizator.Normalize(result.XVector);
-        result.YVector = _normalizator.Normalize(result.YVector);
+        _normalizator.Normalize(result.XVector);
+        _normalizator.Normalize(result.YVector);
 
         return result;
     }

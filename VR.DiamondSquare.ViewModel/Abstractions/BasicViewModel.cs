@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace VR.DiamondSquare.ViewModel.Models;
+namespace VR.DiamondSquare.ViewModel.Abstractions;
 
 public abstract class BasicViewModel : INotifyPropertyChanged
 {
