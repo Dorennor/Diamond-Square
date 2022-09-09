@@ -40,6 +40,7 @@ public partial class MainWindow : Window
         if (number % 2 == 0)
         {
             MessageBox.Show("Wrong input, write odd number that is a number that is a power of 2 and + 1");
+            SizeTextBox.Text = string.Empty;
             return;
         }
 
