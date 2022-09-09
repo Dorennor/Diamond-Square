@@ -8,10 +8,10 @@ namespace VR.DiamondSquare.Tool.Extensions;
 
 public static class BitmapImageSourceExtension
 {
-    public static ImageSource GetImageSource(this Bitmap bmp)
+    public static ImageSource GetImageSource(this Bitmap bitmap)
     {
-        var handle = bmp.GetHbitmap();
+        var bitmapHandle = bitmap.GetHbitmap();
 
-        return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+        return Imaging.CreateBitmapSourceFromHBitmap(bitmapHandle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
     }
 }
