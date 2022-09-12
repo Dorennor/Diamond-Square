@@ -4,9 +4,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tools="clr-namespace:VR.DiamondSquare.Tools.Converters;assembly=VR.DiamondSquare.Tools"
+        xmlns:validation="clr-namespace:VR.DiamondSquare.View.Utils"
         mc:Ignorable="d"
         Title="Diamond-Square"
         Height="600" Width="800">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/UI/ControlTemplates/ValidationTemplates/ValidationTemplateDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
     <Grid Margin="10">
         <DockPanel LastChildFill="True">
@@ -50,8 +59,9 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="SeedTextBox"
-                                 Text="{Binding Seed}"
-                                 PreviewTextInput="NumberValidationTextBox"
+                                 Text="{Binding Seed, Converter={x:Static tools:StringToIntNullableConverter.Converter}}"
+                                 MaxLength="9"
+                                 PreviewTextInput="NumberValidationNullAllowedTextBox"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
@@ -66,15 +76,24 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="SizeTextBox"
+                                 MaxLength="9"
+                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  PreviewTextInput="NumberValidationTextBox"
-                                 LostFocus="SizeTextBox_LostFocus"
-                                 Text="{Binding Size}"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
                                  FontSize="14"
                                  MinHeight="30"
-                                 Margin="5, 0, 5, 5" />
+                                 Margin="5, 0, 5, 5">
+                            <TextBox.Text>
+                                <Binding Path="Size"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:SizeTextBoxValidation></validation:SizeTextBoxValidation>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
 
                         <Label Content="Range:"
                                FontFamily="{StaticResource Roboto-Regular}"
@@ -83,7 +102,6 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="RangeTextBox"
-                                 LostFocus="RangeTextBox_LostFocus"
                                  Text="{Binding Range}"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"

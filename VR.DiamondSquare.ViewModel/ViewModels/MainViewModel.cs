@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using VR.DiamondSquare.Model.Interfaces;
 using VR.DiamondSquare.Model.Models;
 using VR.DiamondSquare.Model.Services;
+using VR.DiamondSquare.Tools.Extensions;
 using VR.DiamondSquare.ViewModel.Abstractions;
 using VR.DiamondSquare.ViewModel.Utils;
 
@@ -74,7 +75,7 @@ public class MainViewModel : BasicViewModel
                 }
 
                 BitmapImage = DrawBitmap(_size, (i, j) => _colors[(int)Math.Round(_heightMap[i, j])]);
-            }, obj => _heightMap == null && _max > _min);
+            }, obj => _heightMap == null & FloatRangeRegex.IsMatch(Range) && _max > _min && Size % 2 != 0 && (Size - 1).IsPowerOfTwo());
         }
     }
 
@@ -142,7 +143,7 @@ public class MainViewModel : BasicViewModel
         get => _seed;
         set
         {
-            if (value == null || value == _seed)
+            if (value == _seed)
             {
                 return;
             }
@@ -188,7 +189,7 @@ public class MainViewModel : BasicViewModel
         get => _size;
         set
         {
-            if (value == 0 || value == _size)
+            if (value == _size)
             {
                 return;
             }
