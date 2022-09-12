@@ -175,12 +175,15 @@ public class MainViewModel : BasicViewModel
 
             _range = value;
 
-            Match match = FloatRangeRegex.Match(_range);
+            if (FloatRangeRegex.IsMatch(value))
+            {
+                Match match = FloatRangeRegex.Match(_range);
 
-            _min = Convert.ToSingle(match.Groups["min"].Value);
-            _max = Convert.ToSingle(match.Groups["max"].Value);
-
-            OnPropertyChanged();
+                _min = Convert.ToSingle(match.Groups["min"].Value);
+                _max = Convert.ToSingle(match.Groups["max"].Value);
+                
+                OnPropertyChanged();
+            }
         }
     }
 

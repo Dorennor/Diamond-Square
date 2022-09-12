@@ -102,13 +102,23 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="RangeTextBox"
-                                 Text="{Binding Range}"
+                                 MaxLength="22"
+                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
                                  FontSize="14"
                                  MinHeight="30"
-                                 Margin="5, 0, 5, 5" />
+                                 Margin="5, 0, 5, 5">
+                            <TextBox.Text>
+                                <Binding Path="Range"
+                                         UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:RangeTextBoxValidation></validation:RangeTextBoxValidation>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
 
                         <CheckBox Name="IsAlternativeComboBox"
                                   IsChecked="{Binding IsAlternativePalette}"
