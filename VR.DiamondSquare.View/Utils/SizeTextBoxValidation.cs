@@ -13,7 +13,7 @@ public class SizeTextBoxValidation : ValidationRule
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
-        if ((string)value != string.Empty)
+        if (!string.IsNullOrEmpty((string)value))
         {
             var number = Convert.ToInt32((string)value);
 

@@ -5,12 +5,12 @@ namespace VR.DiamondSquare.Model.Services;
 
 public class NormalMapGenerator : INormalMapGenerator
 {
-    private INormalizator _normalizator;
-    private static readonly float _coefficient = 1f;
+    private readonly INormalizator _normalizator;
+    private static readonly float Coefficient = 1f;
 
-    public NormalMapGenerator()
+    public NormalMapGenerator(INormalizator normalizator)
     {
-        _normalizator = new Normalizator(0, 255);
+        _normalizator = normalizator;
     }
 
     /// <summary>
@@ -73,8 +73,8 @@ public class NormalMapGenerator : INormalMapGenerator
                     bottomSample = heightMap[x, y];
                 }
 
-                xVector = (leftSample - rightSample) * _coefficient;
-                yVector = (topSample - bottomSample) * _coefficient;
+                xVector = (leftSample - rightSample) * Coefficient;
+                yVector = (topSample - bottomSample) * Coefficient;
                 zVector = (xVector + yVector) / 2;
 
                 result.XVector[x, y] = xVector;
@@ -149,8 +149,8 @@ public class NormalMapGenerator : INormalMapGenerator
                     bottomSample = heightMap[x, y];
                 }
 
-                xVector = (leftSample - rightSample) * _coefficient;
-                yVector = (topSample - bottomSample) * _coefficient;
+                xVector = (leftSample - rightSample) * Coefficient;
+                yVector = (topSample - bottomSample) * Coefficient;
 
                 result.XVector[x, y] = xVector;
                 result.YVector[y, x] = yVector;

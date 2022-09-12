@@ -9,8 +9,13 @@ public class HeightMapGenerator : IHeightMapGenerator
     private static readonly float _min = -1;
     private static readonly float _max = 1;
 
-    private INormalizator _normalizator;
+    private readonly INormalizator _normalizator;
     private float[,] _heightMap;
+
+    public HeightMapGenerator(INormalizator normalizator)
+    {
+        _normalizator = normalizator;
+    }
 
     private void Diamond(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
     {
@@ -91,39 +96,10 @@ public class HeightMapGenerator : IHeightMapGenerator
         Square(leftX + middle, leftY, middle, randomGenerator);
     }
 
-    private void MiddlePointDisplacement(int middleX, int middleY, int rightX, int rightY, IRandomGenerator randomGenerator)
-    {
-        int middle = (rightX - middleX) / 2;
-
-        if (middle > 0)
-        {
-            float a = _heightMap[middleX, middleY];
-            float b = _heightMap[middleX, rightY];
-            float c = _heightMap[rightX, rightY];
-            float d = _heightMap[rightX, middleY];
-
-            int centerX = middleX + middle;
-            int centerY = middleY + middle;
-
-            _heightMap[centerX, centerY] = (a + b + c + d) / 4 + randomGenerator.NextFloat(_min, _max);
-            _heightMap[middleX, centerY] = (a + b) / 2 + randomGenerator.NextFloat(_min, _max);
-            _heightMap[rightX, centerY] = (c + d) / 2 + randomGenerator.NextFloat(_min, _max);
-            _heightMap[centerX, middleY] = (a + d) / 2 + randomGenerator.NextFloat(_min, _max);
-            _heightMap[centerX, rightY] = (b + c) / 2 + randomGenerator.NextFloat(_min, _max);
-
-            MiddlePointDisplacement(middleX, middleY, centerX, centerY, randomGenerator);
-            MiddlePointDisplacement(middleX, middleY + middle, middleX + middle, rightY, randomGenerator);
-            MiddlePointDisplacement(centerX, centerY, rightX, rightY, randomGenerator);
-            MiddlePointDisplacement(middleX + middle, middleY, rightX, centerY, randomGenerator);
-        }
-    }
-
     public float[,] GenerateHeightMap(IRandomGenerator randomGenerator, int size, float min, float max)
     {
         Size = size;
         _heightMap = new float[Size, Size];
-
-        _normalizator = new Normalizator(0, 255);
 
         _heightMap[0, 0] = randomGenerator.NextFloat(min, max);
         _heightMap[0, Size - 1] = randomGenerator.NextFloat(min, max);

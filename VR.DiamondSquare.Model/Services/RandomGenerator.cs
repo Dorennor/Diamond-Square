@@ -1,25 +1,24 @@
 ﻿using VR.DiamondSquare.Model.Interfaces;
-using VR.DiamondSquare.Tools.Extensions;
 
 namespace VR.DiamondSquare.Model.Services
 {
     public class RandomGenerator : IRandomGenerator
     {
-        private readonly Random random;
+        private readonly Random _random;
 
         public RandomGenerator()
         {
-            random = new Random();
+            _random = new Random();
         }
 
         public RandomGenerator(int seed)
         {
-            random = new Random(seed);
+            _random = new Random(seed);
         }
 
         public float NextFloat(float min, float max)
         {
-            return random.NextFloat(min, max);
+            return min + (float)_random.NextDouble() * (max - min);
         }
     }
 }

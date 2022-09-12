@@ -20,6 +20,7 @@ namespace VR.DiamondSquare.ViewModel
         {
             services.AddTransient<INormalMapGenerator, NormalMapGenerator>();
             services.AddTransient<IHeightMapGenerator, HeightMapGenerator>();
+            services.AddTransient<INormalizator, Normalizator>();
 
             services.AddSingleton<IRandomGenerator, RandomGenerator>();
             services.AddSingleton<MainViewModel>();

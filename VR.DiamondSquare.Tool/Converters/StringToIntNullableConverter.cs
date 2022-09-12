@@ -19,7 +19,7 @@ public class StringToIntNullableConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null || value.ToString() == string.Empty)
+        if (string.IsNullOrEmpty(value.ToString()))
         {
             return null;
         }

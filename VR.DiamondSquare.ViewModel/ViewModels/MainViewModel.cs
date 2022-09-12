@@ -74,7 +74,7 @@ public class MainViewModel : BasicViewModel
                     _heightMap = _heightMapper.GenerateHeightMap(_defaultRandomGenerator, _size, _min, _max);
                 }
 
-                BitmapImage = DrawBitmap(_size, (i, j) => _colors[(int)Math.Round(_heightMap[i, j])]);
+                BitmapImage = DrawBitmap(_size, (i, j) => _colors[(int)Math.Round(_heightMap[i, j] * 255)]);
             }, obj => _heightMap == null & FloatRangeRegex.IsMatch(Range) && _max > _min && Size % 2 != 0 && (Size - 1).IsPowerOfTwo());
         }
     }
@@ -89,13 +89,13 @@ public class MainViewModel : BasicViewModel
                 {
                     _alternativeNormalMap = _normalMapper.GenerateAlternativeNormalMap(_heightMap);
 
-                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_alternativeNormalMap.XVector[i, j]), (int)Math.Round(_alternativeNormalMap.YVector[i, j]), (int)Math.Round(_alternativeNormalMap.ZVector[i, j])));
+                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_alternativeNormalMap.XVector[i, j] * 255), (int)Math.Round(_alternativeNormalMap.YVector[i, j] * 255), (int)Math.Round(_alternativeNormalMap.ZVector[i, j] * 255)));
                 }
                 else
                 {
                     _normalMap = _normalMapper.GenerateNormalMap(_heightMap);
 
-                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j]), (int)Math.Round(_normalMap.YVector[i, j]), 255));
+                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j] * 255), (int)Math.Round(_normalMap.YVector[i, j] * 255), 255));
                 }
             }, obj => _heightMap != null);
         }
@@ -181,7 +181,7 @@ public class MainViewModel : BasicViewModel
 
                 _min = Convert.ToSingle(match.Groups["min"].Value);
                 _max = Convert.ToSingle(match.Groups["max"].Value);
-                
+
                 OnPropertyChanged();
             }
         }
