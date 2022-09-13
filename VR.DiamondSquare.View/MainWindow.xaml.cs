@@ -18,7 +18,7 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void NumberValidationNullAllowedTextBox(object sender, TextCompositionEventArgs e)
+    private void SeedNumberValidationWithEmptyStringTextBox(object sender, TextCompositionEventArgs e)
     {
         e.Handled = !onlyIntRegex.IsMatch(e.Text);
     }

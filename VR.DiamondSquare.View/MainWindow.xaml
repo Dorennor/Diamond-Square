@@ -61,7 +61,7 @@
                         <TextBox Name="SeedTextBox"
                                  Text="{Binding Seed, Converter={x:Static tools:StringToIntNullableConverter.Converter}}"
                                  MaxLength="9"
-                                 PreviewTextInput="NumberValidationNullAllowedTextBox"
+                                 PreviewTextInput="SeedNumberValidationWithEmptyStringTextBox"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
@@ -76,8 +76,8 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="SizeTextBox"
+                                 Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                                  MaxLength="9"
-                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  PreviewTextInput="NumberValidationTextBox"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"
@@ -85,14 +85,23 @@
                                  FontSize="14"
                                  MinHeight="30"
                                  Margin="5, 0, 5, 5">
-                            <TextBox.Text>
-                                <Binding Path="Size"
-                                         UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <validation:SizeTextBoxValidation></validation:SizeTextBoxValidation>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
+                            <Validation.ErrorTemplate>
+                                <ControlTemplate>
+                                    <StackPanel>
+                                        <AdornedElementPlaceholder x:Name="textBox" />
+                                        <ItemsControl ItemsSource="{Binding}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding ErrorContent}"
+                                                               FontSize="18"
+                                                               FontWeight="ExtraBold"
+                                                               Foreground="Red" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Validation.ErrorTemplate>
                         </TextBox>
 
                         <Label Content="Range:"

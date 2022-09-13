@@ -75,7 +75,7 @@ public class MainViewModel : BasicViewModel
                 }
 
                 BitmapImage = DrawBitmap(_size, (i, j) => _colors[(int)Math.Round(_heightMap[i, j] * 255)]);
-            }, obj => _heightMap == null & FloatRangeRegex.IsMatch(Range) && _max > _min && Size % 2 != 0 && (Size - 1).IsPowerOfTwo());
+            }, obj => _heightMap == null && !HasErrors);
         }
     }
 
@@ -97,7 +97,7 @@ public class MainViewModel : BasicViewModel
 
                     BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j] * 255), (int)Math.Round(_normalMap.YVector[i, j] * 255), 255));
                 }
-            }, obj => _heightMap != null);
+            }, obj => _heightMap != null && !HasErrors);
         }
     }
 
@@ -173,16 +173,15 @@ public class MainViewModel : BasicViewModel
                 return;
             }
 
-            _range = value;
-
             if (FloatRangeRegex.IsMatch(value))
             {
+                _range = value;
+                OnPropertyChanged();
+
                 Match match = FloatRangeRegex.Match(_range);
 
                 _min = Convert.ToSingle(match.Groups["min"].Value);
                 _max = Convert.ToSingle(match.Groups["max"].Value);
-
-                OnPropertyChanged();
             }
         }
     }
@@ -198,7 +197,24 @@ public class MainViewModel : BasicViewModel
             }
 
             _size = value;
+
+            ValidateSize();
             OnPropertyChanged();
+        }
+    }
+
+    private void ValidateSize()
+    {
+        CleanErrors(nameof(Size));
+
+        if (Size % 2 == 0)
+        {
+            AddError(nameof(Size), "Value must be an odd number.");
+        }
+
+        if (!(Size - 1).IsPowerOfTwo())
+        {
+            AddError(nameof(Size), "Value must be a power of 2 + 1 and bigger than 0.");
         }
     }
 
