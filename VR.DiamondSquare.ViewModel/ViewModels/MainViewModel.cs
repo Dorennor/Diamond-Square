@@ -163,29 +163,6 @@ public class MainViewModel : BasicViewModel
         }
     }
 
-    public string Range
-    {
-        get => _range;
-        set
-        {
-            if (value == string.Empty || value == _range)
-            {
-                return;
-            }
-
-            if (FloatRangeRegex.IsMatch(value))
-            {
-                _range = value;
-                OnPropertyChanged();
-
-                Match match = FloatRangeRegex.Match(_range);
-
-                _min = Convert.ToSingle(match.Groups["min"].Value);
-                _max = Convert.ToSingle(match.Groups["max"].Value);
-            }
-        }
-    }
-
     public int Size
     {
         get => _size;
@@ -200,6 +177,46 @@ public class MainViewModel : BasicViewModel
 
             ValidateSize();
             OnPropertyChanged();
+        }
+    }
+
+    public string Range
+    {
+        get => _range;
+        set
+        {
+            if (value == string.Empty || value == _range)
+            {
+                return;
+            }
+
+            _range = value;
+
+            if (FloatRangeRegex.IsMatch(value))
+            {
+                Match match = FloatRangeRegex.Match(_range);
+
+                _min = Convert.ToSingle(match.Groups["min"].Value);
+                _max = Convert.ToSingle(match.Groups["max"].Value);
+            }
+
+            ValidateRange();
+            OnPropertyChanged();
+        }
+    }
+
+    private void ValidateRange()
+    {
+        CleanErrors(nameof(Range));
+
+        if (!FloatRangeRegex.IsMatch(Range))
+        {
+            AddError(nameof(Range), "Wrong input, write range as \"min; max\".");
+        }
+
+        if (_max <= _min)
+        {
+            AddError(nameof(Range), "Min value must be lesser than max value.");
         }
     }
 

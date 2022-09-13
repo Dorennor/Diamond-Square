@@ -4,7 +4,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:tools="clr-namespace:VR.DiamondSquare.Tools.Converters;assembly=VR.DiamondSquare.Tools"
-        xmlns:validation="clr-namespace:VR.DiamondSquare.View.Utils"
         mc:Ignorable="d"
         Title="Diamond-Square"
         Height="600" Width="800">
@@ -76,7 +75,7 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="SizeTextBox"
-                                 Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                 Text="{Binding Size, Converter={x:Static tools:StringToIntConverter.Converter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                                  MaxLength="9"
                                  PreviewTextInput="NumberValidationTextBox"
                                  HorizontalContentAlignment="Left"
@@ -88,7 +87,7 @@
                             <Validation.ErrorTemplate>
                                 <ControlTemplate>
                                     <StackPanel>
-                                        <AdornedElementPlaceholder x:Name="textBox" />
+                                        <AdornedElementPlaceholder />
                                         <ItemsControl ItemsSource="{Binding}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
@@ -111,22 +110,31 @@
                                Margin="5, 5, 5, 0" />
 
                         <TextBox Name="RangeTextBox"
+                                 Text="{Binding Range, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
                                  MaxLength="22"
-                                 Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
                                  HorizontalContentAlignment="Left"
                                  VerticalContentAlignment="Center"
                                  FontFamily="{StaticResource Roboto-Regular}"
                                  FontSize="14"
                                  MinHeight="30"
                                  Margin="5, 0, 5, 5">
-                            <TextBox.Text>
-                                <Binding Path="Range"
-                                         UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <validation:RangeTextBoxValidation></validation:RangeTextBoxValidation>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
+                            <Validation.ErrorTemplate>
+                                <ControlTemplate>
+                                    <StackPanel>
+                                        <AdornedElementPlaceholder />
+                                        <ItemsControl ItemsSource="{Binding}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding ErrorContent}"
+                                                               FontSize="18"
+                                                               FontWeight="ExtraBold"
+                                                               Foreground="Red" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Validation.ErrorTemplate>
                         </TextBox>
 
                         <CheckBox Name="IsAlternativeComboBox"
