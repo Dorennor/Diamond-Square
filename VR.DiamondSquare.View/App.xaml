@@ -15,7 +15,5 @@
         <FontFamily x:Key="Roboto-Regular">pack://application:,,,/UI/Fonts/#Roboto Regular</FontFamily>
         <FontFamily x:Key="Roboto-Thin">pack://application:,,,/UI/Fonts/#Roboto Thin</FontFamily>
         <FontFamily x:Key="Roboto-ThinItalic">pack://application:,,,/UI/Fonts/#Roboto Thin Italic</FontFamily>
-        
-        
     </Application.Resources>
 </Application>
