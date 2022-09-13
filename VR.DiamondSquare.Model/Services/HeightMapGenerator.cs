@@ -10,7 +10,7 @@ public class HeightMapGenerator : IHeightMapGenerator
     private float[,] _heightMap;
     private float _seedMin;
     private float _seedMax;
-    private float _attenuationCoefficient = 0.5f;
+    private float _attenuationCoefficient = 0.4f;
 
     public HeightMapGenerator(INormalizator normalizator)
     {
