@@ -17,6 +17,14 @@ public class HeightMapGenerator : IHeightMapGenerator
         _normalizator = normalizator;
     }
 
+    /// <summary>
+    /// Method calculate diamond points, when method is called heightMap already must be initialized.
+    /// </summary>
+    /// <param name="leftX"></param>
+    /// <param name="leftY"></param>
+    /// <param name="rightX"></param>
+    /// <param name="rightY"></param>
+    /// <param name="randomGenerator"></param>
     private void Diamond(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
     {
         int middle = (rightX - leftX) / 2;
@@ -32,6 +40,15 @@ public class HeightMapGenerator : IHeightMapGenerator
         _heightMap[centerX, centerY] = (a + b + c + d) / 4 + randomGenerator.NextFloat(_seedMin, _seedMax);
     }
 
+    /// <summary>
+    /// Method calculate square points, when method is called heightMap already must be initialized.
+    /// Also method must be called after call of Diamond method.
+    /// Calculate square points from 4 neighboring points in case, if all of them > 0, otherwise use 3 non zero points.
+    /// </summary>
+    /// <param name="sideCenterX"></param>
+    /// <param name="sideCenterY"></param>
+    /// <param name="middle"></param>
+    /// <param name="randomGenerator"></param>
     private void Square(int sideCenterX, int sideCenterY, int middle, IRandomGenerator randomGenerator)
     {
         float a, b, c, d;
@@ -103,6 +120,14 @@ public class HeightMapGenerator : IHeightMapGenerator
         }
     }
 
+    /// <summary>
+    /// Method calls another method of algorithm.
+    /// </summary>
+    /// <param name="leftX"></param>
+    /// <param name="leftY"></param>
+    /// <param name="rightX"></param>
+    /// <param name="rightY"></param>
+    /// <param name="randomGenerator"></param>
     private void DiamondSquare(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
     {
         int stepLength = (rightX - leftX) / 2;
@@ -115,6 +140,17 @@ public class HeightMapGenerator : IHeightMapGenerator
         Square(leftX + stepLength, leftY, stepLength, randomGenerator);
     }
 
+    /// <summary>
+    /// Initialize fields and run main cycle of algorithm. Size must be bigger than zero,
+    /// min/max parameters need to be in approximately similar ranges, otherwise there will be inadequate results.
+    /// </summary>
+    /// <param name="randomGenerator"></param>
+    /// <param name="size"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="seedMin"></param>
+    /// <param name="seedMax"></param>
+    /// <returns></returns>
     public float[,] GenerateHeightMap(IRandomGenerator randomGenerator, int size, float min, float max, float seedMin, float seedMax)
     {
         _seedMin = seedMin;

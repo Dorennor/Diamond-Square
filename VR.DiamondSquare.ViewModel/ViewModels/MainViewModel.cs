@@ -16,6 +16,9 @@ public class MainViewModel : BasicViewModel
     /// </summary>
     public static readonly Regex FloatRangeRegex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
 
+    /// <summary>
+    /// Regex that filtered only range strings with potential negative numbers, for example "1.2 ; 10.5" or "1, 19".
+    /// </summary>
     public static readonly Regex FloatSeedRangeRegex = new Regex(@"^(?'min'[-]?[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[-]?[0-9]{1,6}(\.[0-9]{1,3})?)$");
 
     private static readonly Color[] _colors = new Color[256];

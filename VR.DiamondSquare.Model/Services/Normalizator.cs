@@ -7,7 +7,7 @@ public class Normalizator : INormalizator
     /// <summary>
     /// Takes float square array with not unnormalized height map.
     /// Normalize it with MinMax algorithm.
-    /// Returns new normalized float array.
+    /// Returns new normalized float array with values between 0 and 1.
     /// </summary>
     /// <param name="heightMap"></param>
     public void Normalize(float[,] heightMap)
