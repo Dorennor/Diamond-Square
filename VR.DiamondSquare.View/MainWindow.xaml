@@ -11,7 +11,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/UI/ControlTemplates/ValidationTemplates/ValidationTemplateDictionary.xaml" />
+                <ResourceDictionary Source="/UI/Styles/TextBoxValidationStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -105,12 +105,30 @@
                                  Margin="5, 0, 5, 5">
                         </TextBox>
 
+                        <Label Content="Seed range:"
+                               FontFamily="{StaticResource Roboto-Regular}"
+                               FontSize="14"
+                               MinHeight="30"
+                               Margin="5, 5, 5, 0" />
+
+                        <TextBox Name="SeedRangeTextBox"
+                                 Text="{Binding SeedRange, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                 MaxLength="22"
+                                 Style="{StaticResource TextBoxInError}"
+                                 HorizontalContentAlignment="Left"
+                                 VerticalContentAlignment="Center"
+                                 FontFamily="{StaticResource Roboto-Regular}"
+                                 FontSize="14"
+                                 MinHeight="30"
+                                 Margin="5, 0, 5, 5">
+                        </TextBox>
+
                         <CheckBox Name="IsAlternativeComboBox"
                                   IsChecked="{Binding IsAlternativePalette}"
                                   FontFamily="{StaticResource Roboto-Regular}"
                                   FontSize="14"
                                   MinHeight="30"
-                                  Margin="5">
+                                  Margin="4, 5, 5, 5">
                             Alternative palette
                         </CheckBox>
                     </StackPanel>

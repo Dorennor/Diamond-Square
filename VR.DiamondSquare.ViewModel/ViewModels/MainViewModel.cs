@@ -16,18 +16,24 @@ public class MainViewModel : BasicViewModel
     /// </summary>
     public static readonly Regex FloatRangeRegex = new Regex(@"^(?'min'[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[0-9]{1,6}(\.[0-9]{1,3})?)$");
 
+    public static readonly Regex FloatSeedRangeRegex = new Regex(@"^(?'min'[-]?[0-9]{1,6}(\.[0-9]{1,3})?)[ ]?\p{P}{1}[ ]?(?'max'[-]?[0-9]{1,6}(\.[0-9]{1,3})?)$");
+
     private static readonly Color[] _colors = new Color[256];
 
     private Bitmap _bitmapImage;
     private AlternativeNormalMap _alternativeNormalMap;
     private NormalMap _normalMap;
 
+    private int _size;
     private string _range;
+    private string _seedRange;
     private int? _seed;
     private bool _isAlternativePalette;
     private float _min;
     private float _max;
-    private int _size;
+    private float _seedMin;
+    private float _seedMax;
+
     private float[,] _heightMap;
 
     private IRandomGenerator _defaultRandomGenerator;
@@ -53,9 +59,14 @@ public class MainViewModel : BasicViewModel
         _normalMapper = normalMapper;
 
         Size = 1025;
-        _min = 1;
-        _max = 10;
+
+        _min = 0;
+        _max = 255;
         Range = $"{_min}; {_max}";
+
+        _seedMin = 0;
+        _seedMax = 255;
+        SeedRange = $"{_seedMin}; {_seedMax}";
     }
 
     public RelayCommand GenerateHeightMapCommand
@@ -67,11 +78,11 @@ public class MainViewModel : BasicViewModel
                 if (Seed.HasValue)
                 {
                     IRandomGenerator randomGenerator = new RandomGenerator(Seed.Value);
-                    _heightMap = _heightMapper.GenerateHeightMap(randomGenerator, _size, _min, _max);
+                    _heightMap = _heightMapper.GenerateHeightMap(randomGenerator, _size, _min, _max, _seedMin, _seedMax);
                 }
                 else
                 {
-                    _heightMap = _heightMapper.GenerateHeightMap(_defaultRandomGenerator, _size, _min, _max);
+                    _heightMap = _heightMapper.GenerateHeightMap(_defaultRandomGenerator, _size, _min, _max, _seedMin, _seedMax);
                 }
 
                 BitmapImage = DrawBitmap(_size, (i, j) => _colors[(int)Math.Round(_heightMap[i, j] * 255)]);
@@ -202,6 +213,46 @@ public class MainViewModel : BasicViewModel
 
             ValidateRange();
             OnPropertyChanged();
+        }
+    }
+
+    public string SeedRange
+    {
+        get => _seedRange;
+        set
+        {
+            if (value == string.Empty || value == _seedRange)
+            {
+                return;
+            }
+
+            _seedRange = value;
+
+            if (FloatSeedRangeRegex.IsMatch(_seedRange))
+            {
+                Match match = FloatSeedRangeRegex.Match(_seedRange);
+
+                _seedMin = Convert.ToSingle(match.Groups["min"].Value);
+                _seedMax = Convert.ToSingle(match.Groups["max"].Value);
+            }
+
+            ValidateSeedRange();
+            OnPropertyChanged();
+        }
+    }
+
+    private void ValidateSeedRange()
+    {
+        CleanErrors(nameof(SeedRange));
+
+        if (!FloatSeedRangeRegex.IsMatch(SeedRange))
+        {
+            AddError(nameof(SeedRange), "Wrong input, write range as \"min; max\".");
+        }
+
+        if (_max <= _min)
+        {
+            AddError(nameof(SeedRange), "Min value must be lesser than max value.");
         }
     }
 

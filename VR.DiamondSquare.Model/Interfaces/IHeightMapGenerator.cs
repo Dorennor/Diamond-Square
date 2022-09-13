@@ -2,5 +2,5 @@
 
 public interface IHeightMapGenerator
 {
-    float[,] GenerateHeightMap(IRandomGenerator randomGenerator, int size, float min, float max);
+    float[,] GenerateHeightMap(IRandomGenerator randomGenerator, int size, float min, float max, float seedMin, float seedMax);
 }
