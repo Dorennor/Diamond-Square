@@ -6,36 +6,36 @@ namespace VR.DiamondSquare.ViewModel.Abstractions;
 
 public abstract class BasicViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
 {
-    protected readonly Dictionary<string, List<string>> _errorsByPropertyName = new Dictionary<string, List<string>>();
+    protected readonly Dictionary<string, List<string>> ErrorsByPropertyName = new Dictionary<string, List<string>>();
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 
-    public bool HasErrors => _errorsByPropertyName.Any();
+    public bool HasErrors => ErrorsByPropertyName.Any();
 
     public IEnumerable GetErrors(string propertyName)
     {
-        return _errorsByPropertyName.ContainsKey(propertyName) ? _errorsByPropertyName[propertyName] : null;
+        return ErrorsByPropertyName.ContainsKey(propertyName) ? ErrorsByPropertyName[propertyName] : null;
     }
 
     protected void AddError(string propertyName, string error)
     {
-        if (!_errorsByPropertyName.ContainsKey(propertyName))
-            _errorsByPropertyName[propertyName] = new List<string>();
+        if (!ErrorsByPropertyName.ContainsKey(propertyName))
+            ErrorsByPropertyName[propertyName] = new List<string>();
 
-        if (!_errorsByPropertyName[propertyName].Contains(error))
+        if (!ErrorsByPropertyName[propertyName].Contains(error))
         {
-            _errorsByPropertyName[propertyName].Add(error);
+            ErrorsByPropertyName[propertyName].Add(error);
             OnErrorsChanged(propertyName);
         }
     }
 
     protected void CleanErrors(string propertyName)
     {
-        if (_errorsByPropertyName.ContainsKey(propertyName))
+        if (ErrorsByPropertyName.ContainsKey(propertyName))
         {
-            _errorsByPropertyName.Remove(propertyName);
+            ErrorsByPropertyName.Remove(propertyName);
             OnErrorsChanged(propertyName);
         }
     }
