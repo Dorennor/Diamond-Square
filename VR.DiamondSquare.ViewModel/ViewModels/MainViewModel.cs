@@ -109,7 +109,28 @@ public class MainViewModel : BasicViewModel
                 {
                     _normalMap = _normalMapper.GenerateNormalMap(_heightMap);
 
-                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j] * 255), (int)Math.Round(_normalMap.YVector[i, j] * 255), 255));
+                    var bitmap = new Bitmap(_size, _size);
+
+                    for (int i = 0; i < _size; i++)
+                    {
+                        for (int j = 0; j < _size; j++)
+                        {
+                            var derivative = Math.Sqrt((_normalMap.XVector[i, j] * _normalMap.XVector[i, j]) + (_normalMap.YVector[i, j] * _normalMap.YVector[i, j])) * 255;
+
+                            if (derivative > 255)
+                            {
+                                bitmap.SetPixel(i, j, Color.White);
+                            }
+                            else
+                            {
+                                bitmap.SetPixel(i, j, Color.FromArgb(255, (int)derivative, (int)derivative, 255));
+                            }
+                        }
+                    }
+
+                    BitmapImage = bitmap;
+
+                    //BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j] * 255, MidpointRounding.ToEven), (int)Math.Round(_normalMap.YVector[i, j] * 255, MidpointRounding.ToEven), 255));
                 }
             }, obj => _heightMap != null && !HasErrors);
         }

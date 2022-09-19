@@ -37,44 +37,44 @@ public class NormalMapGenerator : INormalMapGenerator
         {
             for (int x = 0; x < size; x++)
             {
-                if (x > 0)
-                {
-                    leftSample = heightMap[x - 1, y];
-                }
-                else
+                if (x == 0)
                 {
                     leftSample = heightMap[x, y];
                 }
-
-                if (x < size)
-                {
-                    rightSample = heightMap[x + 1, y];
-                }
                 else
                 {
-                    rightSample = heightMap[x, y];
+                    leftSample = heightMap[x - 1, y];
                 }
 
-                if (y > 1)
-                {
-                    topSample = heightMap[x, y - 1];
-                }
-                else
-                {
-                    topSample = heightMap[x, y];
-                }
-
-                if (y < size)
-                {
-                    bottomSample = heightMap[x, y + 1];
-                }
-                else
+                if (y == size - 1)
                 {
                     bottomSample = heightMap[x, y];
                 }
+                else
+                {
+                    bottomSample = heightMap[x, y + 1];
+                }
 
-                xVector = (leftSample - rightSample) * Coefficient;
-                yVector = (topSample - bottomSample) * Coefficient;
+                if (x == size - 1)
+                {
+                    rightSample = heightMap[x, y];
+                }
+                else
+                {
+                    rightSample = heightMap[x + 1, y];
+                }
+
+                if (y == 0)
+                {
+                    topSample = heightMap[x, y];
+                }
+                else
+                {
+                    topSample = heightMap[x, y - 1];
+                }
+
+                xVector = (leftSample - rightSample + 1) * Coefficient;
+                yVector = (topSample - bottomSample + 1) * Coefficient;
                 zVector = (xVector + yVector) / 2;
 
                 result.XVector[x, y] = xVector;
@@ -99,7 +99,7 @@ public class NormalMapGenerator : INormalMapGenerator
     {
         NormalMap result = new NormalMap(heightMap.GetLength(0));
 
-        int size = heightMap.GetLength(0) - 1;
+        int size = heightMap.GetLength(0);
 
         float leftSample;
         float rightSample;
@@ -113,40 +113,40 @@ public class NormalMapGenerator : INormalMapGenerator
         {
             for (int x = 0; x < size; x++)
             {
-                if (x > 0)
-                {
-                    leftSample = heightMap[x - 1, y];
-                }
-                else
+                if (x == 0)
                 {
                     leftSample = heightMap[x, y];
                 }
-
-                if (x < size)
-                {
-                    rightSample = heightMap[x + 1, y];
-                }
                 else
                 {
-                    rightSample = heightMap[x, y];
+                    leftSample = heightMap[x - 1, y];
                 }
 
-                if (y > 1)
+                if (y == size - 1)
                 {
-                    topSample = heightMap[x, y - 1];
+                    bottomSample = heightMap[x, y];
                 }
                 else
-                {
-                    topSample = heightMap[x, y];
-                }
-
-                if (y < size)
                 {
                     bottomSample = heightMap[x, y + 1];
                 }
+
+                if (x == size - 1)
+                {
+                    rightSample = heightMap[x, y];
+                }
                 else
                 {
-                    bottomSample = heightMap[x, y];
+                    rightSample = heightMap[x + 1, y];
+                }
+
+                if (y == 0)
+                {
+                    topSample = heightMap[x, y];
+                }
+                else
+                {
+                    topSample = heightMap[x, y - 1];
                 }
 
                 xVector = (leftSample - rightSample) * Coefficient;
