@@ -67,7 +67,7 @@ public class MainViewModel : BasicViewModel
         _max = 255;
         Range = $"{_min}; {_max}";
 
-        _seedMin = 0;
+        _seedMin = -255;
         _seedMax = 255;
         SeedRange = $"{_seedMin}; {_seedMax}";
     }

@@ -1,16 +1,16 @@
-﻿using VR.DiamondSquare.Model.Interfaces;
+﻿using System.Drawing;
+using System.Runtime.CompilerServices;
+using VR.DiamondSquare.Model.Interfaces;
 
 namespace VR.DiamondSquare.Model.Services;
 
 public class HeightMapGenerator : IHeightMapGenerator
 {
-    public int Size { get; private set; }
-
     private readonly INormalizator _normalizator;
+    private readonly float _attenuationCoefficient = 0.5f;
+
+    private bool[,] _flags;
     private float[,] _heightMap;
-    private float _seedMin;
-    private float _seedMax;
-    private float _attenuationCoefficient = 0.4f;
 
     public HeightMapGenerator(INormalizator normalizator)
     {
@@ -25,119 +25,94 @@ public class HeightMapGenerator : IHeightMapGenerator
     /// <param name="rightX"></param>
     /// <param name="rightY"></param>
     /// <param name="randomGenerator"></param>
-    private void Diamond(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Diamond(Point left, Point right, Point result, IRandomGenerator randomGenerator, float min, float max)
     {
-        int middle = (rightX - leftX) / 2;
+        if (_flags[result.X, result.Y])
+        {
+            return;
+        }
+        else
+        {
+            _flags[result.X, result.Y] = true;
+        }
 
-        float a = _heightMap[leftX, leftY];
-        float b = _heightMap[leftX, rightY];
-        float c = _heightMap[rightX, rightY];
-        float d = _heightMap[rightX, leftY];
+        float a = _heightMap[left.X, left.Y];
+        float b = _heightMap[left.X, right.Y];
+        float c = _heightMap[right.X, right.Y];
+        float d = _heightMap[right.X, left.Y];
 
-        int centerX = leftX + middle;
-        int centerY = leftY + middle;
-
-        _heightMap[centerX, centerY] = (a + b + c + d) / 4 + randomGenerator.NextFloat(_seedMin, _seedMax);
+        _heightMap[result.X, result.Y] = (a + b + c + d) / 4 + randomGenerator.NextFloat(min, max);
     }
 
     /// <summary>
     /// Method calculate square points, when method is called heightMap already must be initialized.
     /// Also method must be called after call of Diamond method.
-    /// Calculate square points from 4 neighboring points in case, if all of them > 0, otherwise use 3 non zero points.
+    /// Calculate square points from 3 neighboring non zero points.
     /// </summary>
     /// <param name="sideCenterX"></param>
     /// <param name="sideCenterY"></param>
     /// <param name="middle"></param>
     /// <param name="randomGenerator"></param>
-    private void Square(int sideCenterX, int sideCenterY, int middle, IRandomGenerator randomGenerator)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Square(Point first, Point second, Point third, Point result, IRandomGenerator randomGenerator, float min, float max)
     {
-        float a, b, c, d;
-
-        if (sideCenterY - middle >= 0)
+        if (_flags[result.X, result.Y])
         {
-            a = _heightMap[sideCenterX, sideCenterY - middle];
+            return;
         }
         else
         {
-            a = _heightMap[sideCenterX, Size - middle];
+            _flags[result.X, result.Y] = true;
         }
 
-        if (sideCenterX - middle >= 0)
-        {
-            b = _heightMap[sideCenterX - middle, sideCenterY];
-        }
-        else
-        {
-            b = _heightMap[Size - middle, sideCenterY];
-        }
+        float a = _heightMap[first.X, first.Y];
+        float b = _heightMap[second.X, second.Y];
+        float c = _heightMap[third.X, third.Y];
 
-        if (sideCenterY + middle < Size)
-        {
-            c = _heightMap[sideCenterX, sideCenterY + middle];
-        }
-        else
-        {
-            c = _heightMap[sideCenterX, middle];
-        }
-
-        if (sideCenterX + middle < Size)
-        {
-            d = _heightMap[sideCenterX + middle, sideCenterY];
-        }
-        else
-        {
-            d = _heightMap[middle, sideCenterY];
-        }
-
-        if (sideCenterX + middle < Size)
-        {
-            d = _heightMap[sideCenterX + middle, sideCenterY];
-        }
-        else
-        {
-            d = _heightMap[middle, sideCenterY];
-        }
-
-        if (a == 0)
-        {
-            _heightMap[sideCenterX, sideCenterY] = (b + c + d) / 3 + randomGenerator.NextFloat(_seedMin, _seedMax);
-        }
-        else if (b == 0)
-        {
-            _heightMap[sideCenterX, sideCenterY] = (a + c + d) / 3 + randomGenerator.NextFloat(_seedMin, _seedMax);
-        }
-        else if (c == 0)
-        {
-            _heightMap[sideCenterX, sideCenterY] = (a + b + d) / 3 + randomGenerator.NextFloat(_seedMin, _seedMax);
-        }
-        else if (d == 0)
-        {
-            _heightMap[sideCenterX, sideCenterY] = (a + b + c) / 3 + randomGenerator.NextFloat(_seedMin, _seedMax);
-        }
-        else
-        {
-            _heightMap[sideCenterX, sideCenterY] = (a + b + c + d) / 4 + randomGenerator.NextFloat(_seedMin, _seedMax);
-        }
+        _heightMap[result.X, result.Y] = (a + b + c) / 3 + randomGenerator.NextFloat(min, max);
     }
 
     /// <summary>
-    /// Method calls another method of algorithm.
+    /// Method calls another methods of algorithm.
     /// </summary>
     /// <param name="leftX"></param>
     /// <param name="leftY"></param>
     /// <param name="rightX"></param>
     /// <param name="rightY"></param>
     /// <param name="randomGenerator"></param>
-    private void DiamondSquare(int leftX, int leftY, int rightX, int rightY, IRandomGenerator randomGenerator)
+    private void DiamondSquare(Point leftTop, Point rightBottom, IRandomGenerator randomGenerator, float min, float max)
     {
-        int stepLength = (rightX - leftX) / 2;
+        var middle = (rightBottom.X - leftTop.Y) / 2;
+        var center = new Point(leftTop.X + middle, leftTop.Y + middle);
 
-        Diamond(leftX, leftY, rightX, rightY, randomGenerator);
+        var rightTop = new Point(rightBottom.X, leftTop.Y);
+        var leftBottom = new Point(leftTop.X, rightBottom.Y);
 
-        Square(leftX, leftY + stepLength, stepLength, randomGenerator);
-        Square(rightX, rightY - stepLength, stepLength, randomGenerator);
-        Square(rightX - stepLength, rightY, stepLength, randomGenerator);
-        Square(leftX + stepLength, leftY, stepLength, randomGenerator);
+        Diamond(leftTop, rightBottom, center, randomGenerator, min, max);
+
+        var topCenter = new Point(center.X, leftTop.Y);
+        var rightCenter = new Point(rightTop.X, center.Y);
+        var bottomCenter = new Point(center.X, rightBottom.Y);
+        var leftCenter = new Point(leftTop.X, center.Y);
+
+        Square(leftTop, center, rightTop, topCenter, randomGenerator, min, max);
+        Square(rightTop, center, rightBottom, rightCenter, randomGenerator, min, max);
+        Square(rightBottom, center, leftBottom, bottomCenter, randomGenerator, min, max);
+        Square(leftBottom, center, leftTop, leftCenter, randomGenerator, min, max);
+
+        if (center.X - leftTop.X == 1)
+        {
+            return;
+        }
+
+        var newMin = min * _attenuationCoefficient;
+        var newMax = max * _attenuationCoefficient;
+
+        DiamondSquare(leftTop, center, randomGenerator, newMin, newMax);
+        DiamondSquare(topCenter, rightCenter, randomGenerator, newMin, newMax);
+        DiamondSquare(leftCenter, bottomCenter, randomGenerator, newMin, newMax);
+        DiamondSquare(center, rightBottom, randomGenerator, newMin, newMax);
     }
 
     /// <summary>
@@ -153,30 +128,20 @@ public class HeightMapGenerator : IHeightMapGenerator
     /// <returns></returns>
     public float[,] GenerateHeightMap(IRandomGenerator randomGenerator, int size, float min, float max, float seedMin, float seedMax)
     {
-        _seedMin = seedMin;
-        _seedMax = seedMax;
-        Size = size;
-
-        _heightMap = new float[Size, Size];
+        _heightMap = new float[size, size];
+        _flags = new bool[size, size];
 
         _heightMap[0, 0] = randomGenerator.NextFloat(min, max);
-        _heightMap[0, Size - 1] = randomGenerator.NextFloat(min, max);
-        _heightMap[Size - 1, Size - 1] = randomGenerator.NextFloat(min, max);
-        _heightMap[Size - 1, 0] = randomGenerator.NextFloat(min, max);
+        _heightMap[0, size - 1] = randomGenerator.NextFloat(min, max);
+        _heightMap[size - 1, size - 1] = randomGenerator.NextFloat(min, max);
+        _heightMap[size - 1, 0] = randomGenerator.NextFloat(min, max);
 
-        for (int middle = Size - 1; middle > 0; middle /= 2)
-        {
-            for (int x = 0; x < Size - 1; x += middle)
-            {
-                for (int y = 0; y < Size - 1; y += middle)
-                {
-                    DiamondSquare(x, y, x + middle, y + middle, randomGenerator);
+        _flags[0, 0] = true;
+        _flags[0, size - 1] = true;
+        _flags[size - 1, size - 1] = true;
+        _flags[size - 1, 0] = true;
 
-                    _seedMin *= _attenuationCoefficient;
-                    _seedMax *= _attenuationCoefficient;
-                }
-            }
-        }
+        DiamondSquare(new Point(0, 0), new Point(size - 1, size - 1), randomGenerator, seedMin, seedMax);
 
         _normalizator.Normalize(_heightMap);
 

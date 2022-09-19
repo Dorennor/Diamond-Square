@@ -15,7 +15,7 @@ public class Normalizator : INormalizator
         var heightMapEnumerable = heightMap.Cast<float>();
 
         float minValue = heightMapEnumerable.Min();
-        float maxValue = heightMapEnumerable.Max(); ;
+        float maxValue = heightMapEnumerable.Max();
 
         for (int i = 0; i < heightMap.GetLength(0); i++)
         {
