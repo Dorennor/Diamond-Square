@@ -83,7 +83,7 @@ public class HeightMapGenerator : IHeightMapGenerator
     /// <param name="randomGenerator"></param>
     private void DiamondSquare(Point leftTop, Point rightBottom, IRandomGenerator randomGenerator, float min, float max)
     {
-        var middle = (rightBottom.X - leftTop.Y) / 2;
+        var middle = (rightBottom.X - leftTop.X) / 2;
         var center = new Point(leftTop.X + middle, leftTop.Y + middle);
 
         var rightTop = new Point(rightBottom.X, leftTop.Y);
@@ -101,7 +101,7 @@ public class HeightMapGenerator : IHeightMapGenerator
         Square(rightBottom, center, leftBottom, bottomCenter, randomGenerator, min, max);
         Square(leftBottom, center, leftTop, leftCenter, randomGenerator, min, max);
 
-        if (center.X - leftTop.X == 1)
+        if (center.X - leftTop.X <= 1)
         {
             return;
         }
