@@ -10,11 +10,11 @@ public class SobelNormalMapGenerator : INormalMapGenerator
 
     //private readonly int[,] sobelX = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
     //private readonly int[,] sobelY = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
-    //private readonly int[,] sobelZ = { { -1 - 2 - 1 }, { -2 - 4 - 2 }, { -1 - 2 - 1 } };
+ц    //private readonly int[,] sobelZ = { { -1, -2, -1 }, { -2, -4, -2 }, { -1, -2, -1 } };
 
     private readonly int[,] sobelX = { { 3, 10, 3 }, { 0, 0, 0 }, { -3, -10, -3 } };
     private readonly int[,] sobelY = { { 3, 0, 3 }, { 10, 0, -10 }, { 3, 0, -3 } };
-    //private readonly int[,] sobelZ = { { -1 - 2 - 1 }, { -2 - 4 - 2 }, { -1 - 2 - 1 } };
+    private readonly int[,] sobelZ = { { -1, -2, -1 }, { -2, -4, -2 }, { -1, -2, -1 } };
 
     public SobelNormalMapGenerator(INormalizator normalizator)
     {
@@ -77,7 +77,15 @@ public class SobelNormalMapGenerator : INormalMapGenerator
                     (bottom * sobelY[2, 1]) +
                     (rightBottom * sobelY[2, 2]);
 
-                zVector = (xVector + yVector) / 2;
+                zVector = (leftTop * sobelZ[0, 0]) +
+                    (top * sobelZ[0, 1]) +
+                    (rightTop * sobelZ[0, 2]) +
+                    (left * sobelZ[1, 0]) +
+                    (center * sobelZ[1, 1]) +
+                    (right * sobelZ[1, 2]) +
+                    (leftBottom * sobelZ[2, 0]) +
+                    (bottom * sobelZ[2, 1]) +
+                    (rightBottom * sobelZ[2, 2]);
 
                 result.XVector[x, y] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector) + (zVector * zVector));
                 result.YVector[y, x] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector) + (zVector * zVector));
