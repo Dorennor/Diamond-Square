@@ -51,6 +51,16 @@
                                 MinHeight="30"
                                 Margin="5" />
 
+                        <Button Name="SaveImageButton"
+                                Command="{Binding SaveImageCommand}"
+                                Content="Save image"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                FontFamily="{StaticResource Roboto-Regular}"
+                                FontSize="14"
+                                MinHeight="30"
+                                Margin="5" />
+
                         <Label Content="Seed:"
                                FontFamily="{StaticResource Roboto-Regular}"
                                FontSize="14"

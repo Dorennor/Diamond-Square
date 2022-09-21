@@ -1,5 +1,8 @@
 ﻿using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text.RegularExpressions;
+using System.Windows;
+using Microsoft.Win32;
 using VR.DiamondSquare.Model.Interfaces;
 using VR.DiamondSquare.Model.Models;
 using VR.DiamondSquare.Model.Services;
@@ -46,6 +49,7 @@ public class MainViewModel : BasicViewModel
     private RelayCommand _generateHeightMapCommand;
     private RelayCommand _generateNormalMapCommand;
     private RelayCommand _cleanImageCommand;
+    private RelayCommand _saveImageCommand;
 
     static MainViewModel()
     {
@@ -154,6 +158,34 @@ public class MainViewModel : BasicViewModel
                 if (_normalMap != null)
                 {
                     _normalMap = null;
+                }
+            }, obj => _bitmapImage != null);
+        }
+    }
+
+    public RelayCommand SaveImageCommand
+    {
+        get
+        {
+            return _saveImageCommand ?? new RelayCommand(obj =>
+            {
+                SaveFileDialog saveImageDialog = new SaveFileDialog();
+                saveImageDialog.Title = "Save image as: ";
+                saveImageDialog.OverwritePrompt = true;
+                saveImageDialog.CheckPathExists = true;
+
+                saveImageDialog.Filter = "*.jpg|*.jpg|*.png|*.png|*.bmp|*.bmp|All files|*.*";
+
+                if (saveImageDialog.ShowDialog().Value)
+                {
+                    try
+                    {
+                        _bitmapImage.Save(saveImageDialog.FileName, ImageFormat.Jpeg);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Can't save this file!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }, obj => _bitmapImage != null);
         }
