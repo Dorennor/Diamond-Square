@@ -18,7 +18,7 @@ namespace VR.DiamondSquare.ViewModel
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<INormalMapGenerator, SobelNormalMapGenerator>();
+            services.AddTransient<INormalMapGenerator, NormalMapGenerator>();
             services.AddTransient<IHeightMapGenerator, HeightMapGenerator>();
             services.AddTransient<INormalizator, Normalizator>();
 

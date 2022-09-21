@@ -25,12 +25,13 @@ public class SobelNormalMapGenerator : INormalMapGenerator
     {
         AlternativeNormalMap result = new AlternativeNormalMap(heightMap.GetLength(0));
 
-        for (int i = 0; i < heightMap.GetLength(1); i++)
+        for (int i = 0; i < heightMap.GetLength(0); i++)
         {
-            for (int j = 0; j < heightMap.GetLength(2); j++)
+            for (int j = 0; j < heightMap.GetLength(1); j++)
             {
                 result.XVector[i, j] = 1;
                 result.YVector[i, j] = 1;
+                result.ZVector[i, j] = 1;
             }
         }
 
@@ -78,9 +79,9 @@ public class SobelNormalMapGenerator : INormalMapGenerator
 
                 zVector = (xVector + yVector) / 2;
 
-                result.XVector[x, y] = xVector * Coefficient;
-                result.YVector[y, x] = yVector * Coefficient;
-                result.ZVector[x, y] = zVector * Coefficient;
+                result.XVector[x, y] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector) + (zVector * zVector));
+                result.YVector[y, x] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector) + (zVector * zVector));
+                result.ZVector[x, y] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector) + (zVector * zVector));
             }
         }
 
@@ -145,8 +146,8 @@ public class SobelNormalMapGenerator : INormalMapGenerator
                     (bottom * sobelY[2, 1]) +
                     (rightBottom * sobelY[2, 2]);
 
-                result.XVector[x, y] = xVector * Coefficient;
-                result.YVector[y, x] = yVector * Coefficient;
+                result.XVector[x, y] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector));
+                result.YVector[y, x] = (float)Math.Sqrt((xVector * xVector) + (yVector * yVector));
             }
         }
 
