@@ -10,7 +10,7 @@ public class SobelNormalMapGenerator : INormalMapGenerator
 
     //private readonly int[,] sobelX = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
     //private readonly int[,] sobelY = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
-ц    //private readonly int[,] sobelZ = { { -1, -2, -1 }, { -2, -4, -2 }, { -1, -2, -1 } };
+    //private readonly int[,] sobelZ = { { -1, -2, -1 }, { -2, -4, -2 }, { -1, -2, -1 } };
 
     private readonly int[,] sobelX = { { 3, 10, 3 }, { 0, 0, 0 }, { -3, -10, -3 } };
     private readonly int[,] sobelY = { { 3, 0, 3 }, { 10, 0, -10 }, { 3, 0, -3 } };
@@ -21,6 +21,13 @@ public class SobelNormalMapGenerator : INormalMapGenerator
         _normalizator = normalizator;
     }
 
+    /// <summary>
+    /// Calculates normal map with Sobel operator algorithm by three filters.
+    /// Takes height map, that need to be already normalized(values from 0 to 255).
+    /// Returns GreyNormalMap object with X, Y and Z float arrays, that contain values for R, G, B colors respectively for drawing it outside of model.
+    /// </summary>
+    /// <param name="heightMap"></param>
+    /// <returns></returns>
     public AlternativeNormalMap GenerateAlternativeNormalMap(float[,] heightMap)
     {
         AlternativeNormalMap result = new AlternativeNormalMap(heightMap.GetLength(0));
@@ -100,6 +107,13 @@ public class SobelNormalMapGenerator : INormalMapGenerator
         return result;
     }
 
+    /// <summary>
+    /// Calculates normal map with Sobel operator algorithm by two filters.
+    /// Takes height map, that need to be already normalized(values from 0 to 255).
+    /// Returns NormalMap object with X and Y float arrays, that contain values for R, and G colors respectively for drawing it outside of model.
+    /// </summary>
+    /// <param name="heightMap"></param>
+    /// <returns></returns>
     public NormalMap GenerateNormalMap(float[,] heightMap)
     {
         NormalMap result = new NormalMap(heightMap.GetLength(0));

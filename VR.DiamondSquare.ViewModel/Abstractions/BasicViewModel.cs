@@ -8,9 +8,9 @@ public abstract class BasicViewModel : INotifyPropertyChanged, INotifyDataErrorI
 {
     protected readonly Dictionary<string, HashSet<string>> ErrorsByPropertyName = new Dictionary<string, HashSet<string>>();
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged;
 
-    public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+    public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
     public bool HasErrors => ErrorsByPropertyName.Any();
 
@@ -46,13 +46,7 @@ public abstract class BasicViewModel : INotifyPropertyChanged, INotifyDataErrorI
         }
     }
 
-    protected void OnErrorsChanged([CallerMemberName] string? propertyName = null)
-    {
-        ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-    }
+    protected void OnErrorsChanged([CallerMemberName] string? propertyName = null) => ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
