@@ -15,7 +15,7 @@ public class NormalMapGenerator : INormalMapGenerator
 
     /// <summary>
     /// Takes height map, that need to be already normalized (values from 0 to 255).
-    /// Returns GreyNormalMap object with X, Y and Z float arrays, that contain values for R, G, B colors respectively for drawing it outside of model.
+    /// Returns AlternativeNormalMap object with X, Y and Z float arrays, that contain values for R, G, B colors respectively for drawing it outside of model.
     /// </summary>
     /// <param name="heightMap"></param>
     public AlternativeNormalMap GenerateAlternativeNormalMap(float[,] heightMap)
