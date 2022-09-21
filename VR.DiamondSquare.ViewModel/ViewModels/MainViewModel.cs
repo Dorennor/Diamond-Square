@@ -113,30 +113,21 @@ public class MainViewModel : BasicViewModel
                 {
                     _normalMap = _normalMapper.GenerateNormalMap(_heightMap);
 
-                    var bitmap = new Bitmap(_size, _size);
+                    float[,] collection = new float[_normalMap.XVector.GetLength(0), _normalMap.YVector.GetLength(0)];
 
                     for (int i = 0; i < _size; i++)
                     {
                         for (int j = 0; j < _size; j++)
                         {
-                            var derivative = Math.Sqrt((_normalMap.XVector[i, j] * _normalMap.XVector[i, j]) + (_normalMap.YVector[i, j] * _normalMap.YVector[i, j])) * 255;
-
-                            if (derivative > 255)
-                            {
-                                bitmap.SetPixel(i, j, Color.White);
-                            }
-                            else
-                            {
-                                bitmap.SetPixel(i, j, Color.FromArgb(255, (int)Math.Round(derivative), (int)Math.Round(derivative), 255));
-                            }
-
-                            //bitmap.SetPixel(i, j, Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j] * 255), (int)Math.Round(_normalMap.YVector[i, j] * 255), 255));
+                            collection[i, j] = (float)Math.Sqrt((_normalMap.XVector[i, j] * _normalMap.XVector[i, j]) + (_normalMap.YVector[i, j] * _normalMap.YVector[i, j]));
                         }
                     }
 
-                    BitmapImage = bitmap;
+                    INormalizator normalizator = new Normalizator();
 
-                    //BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(_normalMap.XVector[i, j] * 255, MidpointRounding.ToEven), (int)Math.Round(_normalMap.YVector[i, j] * 255, MidpointRounding.ToEven), 255));
+                    normalizator.Normalize(collection);
+
+                    BitmapImage = DrawBitmap(_size, (i, j) => Color.FromArgb(255, (int)Math.Round(collection[i, j] * 255), (int)Math.Round(collection[i, j] * 255), 255));
                 }
             }, obj => _heightMap != null && !HasErrors);
         }

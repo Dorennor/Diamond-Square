@@ -6,11 +6,15 @@ namespace VR.DiamondSquare.Model.Services;
 public class SobelNormalMapGenerator : INormalMapGenerator
 {
     private readonly INormalizator _normalizator;
-    private static readonly float Coefficient = 2f;
+    private static readonly float Coefficient = 1f;
 
-    private readonly int[,] sobelX = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
-    private readonly int[,] sobelY = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
-    private readonly int[,] sobelZ = { { -1 - 2 - 1 }, { -2 - 4 - 2 }, { -1 - 2 - 1 } };
+    //private readonly int[,] sobelX = { { -1, 0, 1 }, { -2, 0, 2 }, { -1, 0, 1 } };
+    //private readonly int[,] sobelY = { { -1, -2, -1 }, { 0, 0, 0 }, { 1, 2, 1 } };
+    //private readonly int[,] sobelZ = { { -1 - 2 - 1 }, { -2 - 4 - 2 }, { -1 - 2 - 1 } };
+
+    private readonly int[,] sobelX = { { 3, 10, 3 }, { 0, 0, 0 }, { -3, -10, -3 } };
+    private readonly int[,] sobelY = { { 3, 0, 3 }, { 10, 0, -10 }, { 3, 0, -3 } };
+    //private readonly int[,] sobelZ = { { -1 - 2 - 1 }, { -2 - 4 - 2 }, { -1 - 2 - 1 } };
 
     public SobelNormalMapGenerator(INormalizator normalizator)
     {
@@ -72,15 +76,7 @@ public class SobelNormalMapGenerator : INormalMapGenerator
                     (bottom * sobelY[2, 1]) +
                     (rightBottom * sobelY[2, 2]);
 
-                zVector = (leftTop * sobelZ[0, 0]) +
-                    (top * sobelZ[0, 1]) +
-                    (rightTop * sobelZ[0, 2]) +
-                    (left * sobelZ[1, 0]) +
-                    (center * sobelZ[1, 1]) +
-                    (right * sobelZ[1, 2]) +
-                    (leftBottom * sobelZ[2, 0]) +
-                    (bottom * sobelZ[2, 1]) +
-                    (rightBottom * sobelZ[2, 2]);
+                zVector = (xVector + yVector) / 2;
 
                 result.XVector[x, y] = xVector * Coefficient;
                 result.YVector[y, x] = yVector * Coefficient;
@@ -99,9 +95,9 @@ public class SobelNormalMapGenerator : INormalMapGenerator
     {
         NormalMap result = new NormalMap(heightMap.GetLength(0));
 
-        for (int i = 0; i < heightMap.GetLength(1); i++)
+        for (int i = 0; i < heightMap.GetLength(0); i++)
         {
-            for (int j = 0; j < heightMap.GetLength(2); j++)
+            for (int j = 0; j < heightMap.GetLength(1); j++)
             {
                 result.XVector[i, j] = 1;
                 result.YVector[i, j] = 1;
